@@ -1,0 +1,29 @@
+# ---------------------------------------------------------------------------
+# A BUILD file is Starlark code, but it is DECLARATIVE: it does not build
+# anything when it runs. It only declares targets in a graph. Bazel then
+# decides what to actually execute.
+#
+# A BUILD file is evaluated in three phases:
+#   1. LOADING   - BUILD and .bzl files are parsed, macros expand, the target
+#                  graph is created.
+#   2. ANALYSIS  - rules run their implementation, producing a graph of actions.
+#   3. EXECUTION - only the actions needed for the requested targets run.
+# ---------------------------------------------------------------------------
+
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# package() sets defaults for EVERY target in this file. It must appear before
+# any target and may appear only once.
+package(
+    default_visibility = ["//visibility:private"],
+)
+
+cc_binary(
+    # Attributes are always keyword arguments, never positional.
+    name = "greet",
+    srcs = ["greet.cc"],
+
+    # Common attributes available on nearly every rule:
+    tags = ["manual-doc-example"],  # arbitrary metadata, also filters targets
+    visibility = ["//visibility:public"],  # overrides the package default above
+)

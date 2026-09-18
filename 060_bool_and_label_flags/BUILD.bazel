@@ -1,0 +1,46 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load(":settings.bzl", "max_workers")
+
+# skylib ships ready-made flag rules so you rarely need to write your own.
+bool_flag(
+    name = "enable_telemetry",
+    build_setting_default = False,
+)
+
+max_workers(
+    name = "max_workers",
+    build_setting_default = 4,
+)
+
+config_setting(
+    name = "telemetry_on",
+    flag_values = {":enable_telemetry": "true"},
+)
+
+genrule(
+    name = "runtime_config",
+    outs = ["runtime.conf"],
+    cmd = select({
+        ":telemetry_on": "echo 'telemetry=enabled' > $@",
+        "//conditions:default": "echo 'telemetry=disabled' > $@",
+    }),
+)
+
+# --- label_flag: a flag whose VALUE IS A TARGET ------------------------------
+filegroup(name = "fast_impl", srcs = ["impl_fast.txt"])
+
+filegroup(name = "safe_impl", srcs = ["impl_safe.txt"])
+
+# The default dependency can be swapped from the command line:
+#   --//060_bool_and_label_flags:impl=//...:fast_impl
+label_flag(
+    name = "impl",
+    build_setting_default = ":safe_impl",
+)
+
+genrule(
+    name = "chosen_impl",
+    srcs = [":impl"],
+    outs = ["chosen.txt"],
+    cmd = "cat $(SRCS) > $@",
+)

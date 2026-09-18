@@ -1,0 +1,21 @@
+load("@rules_java//java:defs.bzl", "java_library", "java_test")
+
+java_library(
+    name = "calculator",
+    srcs = ["src/Calculator.java"],
+)
+
+java_test(
+    name = "calculator_test",
+    size = "small",
+    srcs = ["src/CalculatorTest.java"],
+
+    # By default java_test runs the JUnit4 runner and expects `test_class`.
+    # use_testrunner = False makes it run main() directly, so no JUnit
+    # dependency is needed. With JUnit you would instead write:
+    #     test_class = "com.example.calc.CalculatorTest",
+    #     deps = ["@maven//:junit_junit"],
+    main_class = "com.example.calc.CalculatorTest",
+    use_testrunner = False,
+    deps = [":calculator"],
+)

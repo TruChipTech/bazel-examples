@@ -1,0 +1,18 @@
+load(":defs.bzl", "bundle", "python_service")
+
+# One call -> library + binary + test.
+python_service(
+    name = "api",
+    srcs = ["api.py"],
+    main = "api_main.py",
+    test_srcs = ["api_test.py"],
+)
+
+# A rule composing the OUTPUTS of other targets.
+bundle(
+    name = "release_bundle",
+    parts = [
+        ":api",
+        ":api_lib",
+    ],
+)

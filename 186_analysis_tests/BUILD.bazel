@@ -1,0 +1,3 @@
+load(":rules_test.bzl", "rules_test_suite")
+
+rules_test_suite(name = "rules_tests")

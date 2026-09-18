@@ -1,0 +1,16 @@
+# The ONLY change from a normal BUILD file is this load path. Every target
+# below is written exactly as it would be with the native rules.
+load("//198_wrapping_rules:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "widget",
+    srcs = ["widget.cc"],
+    hdrs = ["widget.h"],
+)
+
+# size and tags come from the wrapper's defaults.
+cc_test(
+    name = "widget_test",
+    srcs = ["widget_test.cc"],
+    deps = [":widget"],
+)

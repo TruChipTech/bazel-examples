@@ -1,0 +1,27 @@
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+# expand_template does literal string substitution on a template file.
+# No shell, no sed, no escaping problems.
+expand_template(
+    name = "version_header",
+    out = "version.h",
+    substitutions = {
+        "{APP_NAME}": "sample-app",
+        "{VERSION}": "2.4.1",
+        "{CHANNEL}": "stable",
+    },
+    template = "version.h.tpl",
+)
+
+cc_library(
+    name = "version",
+    hdrs = [":version.h"],
+    includes = ["."],
+)
+
+cc_binary(
+    name = "print_version",
+    srcs = ["print_version.cc"],
+    deps = [":version"],
+)

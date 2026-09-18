@@ -1,0 +1,22 @@
+load("@protobuf//bazel:cc_proto_library.bzl", "cc_proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@protobuf//bazel:py_proto_library.bzl", "py_proto_library")
+
+package(default_visibility = ["//200_capstone_production:__subpackages__"])
+
+# ONE schema, shared by the C++ producer and the Python consumer.
+proto_library(
+    name = "telemetry_proto",
+    srcs = ["telemetry.proto"],
+    strip_import_prefix = "/200_capstone_production/schema",
+)
+
+cc_proto_library(
+    name = "telemetry_cc_proto",
+    deps = [":telemetry_proto"],
+)
+
+py_proto_library(
+    name = "telemetry_py_proto",
+    deps = [":telemetry_proto"],
+)

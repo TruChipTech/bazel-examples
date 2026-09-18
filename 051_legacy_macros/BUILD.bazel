@@ -1,0 +1,10 @@
+load(":macros.bzl", "py_module")
+
+# ONE call expands into THREE targets:
+#   :greeter       (py_library)
+#   :greeter_test  (py_test)
+#   :greeter_bin   (py_binary)
+py_module(
+    name = "greeter",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,6 @@
+load(":pipeline.bzl", "top_words")
+
+top_words(
+    name = "top",
+    srcs = ["text.txt"],
+)

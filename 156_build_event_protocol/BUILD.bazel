@@ -1,0 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(name = "passing_test", size = "small", srcs = ["passing_test.py"])
+
+genrule(
+    name = "artifact",
+    outs = ["artifact.txt"],
+    cmd = "echo 'an artifact the BEP will report' > $@",
+)

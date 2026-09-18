@@ -1,0 +1,55 @@
+load(":toolchain.bzl", "greet", "greeter_toolchain")
+
+# 1. The toolchain TYPE: an abstract identity. It has no implementation -
+#    it is just a label that means "the greeter toolchain slot".
+toolchain_type(name = "greeter_toolchain_type")
+
+# 2. Concrete IMPLEMENTATIONS.
+greeter_toolchain(
+    name = "english_impl",
+    greeting = "Hello",
+    language = "English",
+    punctuation = "!",
+)
+
+greeter_toolchain(
+    name = "french_impl",
+    greeting = "Bonjour",
+    language = "French",
+    punctuation = " !",
+)
+
+# 3. toolchain() rules bind an implementation to the constraints under which
+#    it should be selected.
+toolchain(
+    name = "english_toolchain",
+    toolchain = ":english_impl",
+    toolchain_type = ":greeter_toolchain_type",
+)
+
+toolchain(
+    name = "french_toolchain",
+    target_compatible_with = ["//123_toolchain_basics:france"],
+    toolchain = ":french_impl",
+    toolchain_type = ":greeter_toolchain_type",
+)
+
+# A custom constraint used to select the French toolchain.
+constraint_setting(name = "country")
+
+constraint_value(
+    name = "france",
+    constraint_setting = ":country",
+)
+
+platform(
+    name = "french_platform",
+    constraint_values = [":france"],
+    parents = ["@platforms//host"],
+)
+
+# 4. A target that consumes whichever toolchain was resolved.
+greet(
+    name = "greeting",
+    who = "Bazel",
+)

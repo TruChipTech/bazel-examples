@@ -1,0 +1,64 @@
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files", "strip_prefix")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# --- 1. Build --------------------------------------------------------------
+py_binary(
+    name = "app",
+    srcs = ["src/app.py"],
+    main = "src/app.py",
+)
+
+# --- 2. Generate metadata --------------------------------------------------
+expand_template(
+    name = "version_file",
+    out = "VERSION",
+    substitutions = {"{VERSION}": "3.1.0"},
+    template = "version.tpl",
+)
+
+# --- 3. Lay out the install tree -------------------------------------------
+pkg_files(
+    name = "binary_files",
+    srcs = [":app"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/opt/demo-app/bin",
+)
+
+pkg_files(
+    name = "config_files",
+    srcs = glob(["config/*.yaml"]),
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "/opt/demo-app/config",
+    strip_prefix = strip_prefix.from_pkg("config"),
+)
+
+pkg_files(
+    name = "metadata_files",
+    srcs = [":VERSION"],
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "/opt/demo-app",
+)
+
+# --- 4. Package ------------------------------------------------------------
+pkg_tar(
+    name = "release",
+    srcs = [
+        ":binary_files",
+        ":config_files",
+        ":metadata_files",
+    ],
+    extension = "tar.gz",
+)
+
+# --- 5. Verify -------------------------------------------------------------
+# The release is only "done" when a test has inspected it.
+sh_test(
+    name = "release_test",
+    size = "small",
+    srcs = ["verify_release.sh"],
+    data = [":release"],
+    tags = ["release"],
+)

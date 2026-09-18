@@ -1,0 +1,44 @@
+load(
+    "//150_capstone_rule_set/rules:defs.bzl",
+    "recipe_binary",
+    "recipe_library",
+    "recipe_lint_report",
+    "recipe_test",
+)
+
+recipe_library(
+    name = "base",
+    srcs = ["base.recipe"],
+)
+
+recipe_library(
+    name = "dough",
+    srcs = ["dough.recipe"],
+    deps = [":base"],
+)
+
+recipe_library(
+    name = "topping",
+    srcs = ["topping.recipe"],
+    deps = [":base"],
+)
+
+recipe_binary(
+    name = "pizza",
+    deps = [
+        ":dough",
+        ":topping",
+    ],
+)
+
+recipe_test(
+    name = "dough_test",
+    size = "small",
+    expect_contains = "knead for ten minutes",
+    deps = [":dough"],
+)
+
+recipe_lint_report(
+    name = "lint",
+    targets = [":topping"],
+)

@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+load(":finalizer.bzl", "coverage_guard")
+
+py_library(name = "alpha", srcs = ["alpha.py"], imports = ["."])
+
+py_test(
+    name = "alpha_test",
+    size = "small",
+    srcs = ["alpha_test.py"],
+    deps = [":alpha"],
+)
+
+# Declared FIRST in the file, but expanded LAST - so it sees :alpha and
+# :alpha_test even though both are declared below it.
+coverage_guard(
+    name = "coverage_guard",
+    size = "small",
+)

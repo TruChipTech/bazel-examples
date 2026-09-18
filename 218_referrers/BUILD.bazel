@@ -1,0 +1,12 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":referrer.bzl", "attach_signature")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "mkreferrer", srcs = ["mkreferrer.py"], main = "mkreferrer.py")
+
+# Attach the signature from sample 271 to the image it signs.
+attach_signature(
+    name = "signed_bundle",
+    signed_image = "//271_sign_oci_image:server_signature",
+)

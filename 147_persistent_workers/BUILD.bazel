@@ -1,0 +1,35 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":defs.bzl", "worker_task")
+
+py_binary(
+    name = "worker",
+    srcs = ["worker.py"],
+    main = "worker.py",
+    visibility = ["//visibility:public"],
+)
+
+# Several tasks. With the worker strategy they share ONE process; notice the
+# pid and request counter in the outputs.
+worker_task(
+    name = "task_a",
+    words = [
+        "alpha",
+        "apple",
+    ],
+)
+
+worker_task(
+    name = "task_b",
+    words = [
+        "beta",
+        "banana",
+    ],
+)
+
+worker_task(
+    name = "task_c",
+    words = [
+        "gamma",
+        "grape",
+    ],
+)

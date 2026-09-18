@@ -1,0 +1,24 @@
+load(":validated.bzl", "validated_config")
+
+validated_config(
+    name = "prod",
+    region = "us-east",
+    replicas = 3,
+    tier = "premium",
+)
+
+validated_config(
+    name = "dev",
+    region = "us-west",
+)
+
+# Each of these fails with a clear message - uncomment to see:
+#
+# validated_config(name = "bad_tier", region = "us-east", tier = "gold")
+#   -> tier: invalid value 'gold'; allowed: basic, premium, standard
+#
+# validated_config(name = "no_region")
+#   -> missing value for mandatory attribute 'region'
+#
+# validated_config(name = "bad_combo", region = "us-east", tier = "premium")
+#   -> premium tier requires at least 2 replicas

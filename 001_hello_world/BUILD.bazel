@@ -1,0 +1,12 @@
+# Every rule you use in Bazel 9 must be loaded first. Nothing is "built in"
+# anymore - cc_binary lives in the rules_cc module declared in //MODULE.bazel.
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# cc_binary produces an executable program.
+#   name: the target's identity. Combined with the package path it forms the
+#         label //001_hello_world:hello
+#   srcs: the source files Bazel compiles and links into the binary.
+cc_binary(
+    name = "hello",
+    srcs = ["hello.cc"],
+)

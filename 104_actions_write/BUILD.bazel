@@ -1,0 +1,15 @@
+load(":manifest.bzl", "generated_script", "manifest")
+
+manifest(
+    name = "file_manifest",
+    srcs = [
+        "one.cc",
+        "three.txt",
+        "two.py",
+    ],
+)
+
+generated_script(
+    name = "hello_script",
+    message = "written by ctx.actions.write",
+)

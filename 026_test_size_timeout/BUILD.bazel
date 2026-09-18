@@ -1,0 +1,25 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+# size sets BOTH the default timeout and the resources Bazel assumes the test
+# needs when scheduling. Pick the smallest size that is honestly true.
+py_test(
+    name = "quick_test",
+    size = "small",  # default timeout: 60s
+    srcs = ["quick_test.py"],
+)
+
+py_test(
+    name = "slow_test",
+    size = "medium",  # default timeout: 300s
+    srcs = ["slow_test.py"],
+)
+
+# timeout overrides the size's default duration without changing the resource
+# assumptions. Use it when a test is cheap but genuinely slow (e.g. it sleeps).
+py_test(
+    name = "slow_but_cheap_test",
+    size = "small",
+    timeout = "moderate",  # 300s, despite size = small
+    srcs = ["slow_test.py"],
+    main = "slow_test.py",
+)

@@ -1,0 +1,28 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "imagediff", srcs = ["imagediff.py"], main = "imagediff.py")
+
+pkg_tar(name = "base_layer", srcs = ["base.txt"], package_dir = "/app")
+
+pkg_tar(name = "v1_layer", srcs = ["v1.txt"], package_dir = "/app")
+
+pkg_tar(name = "v2_layer", srcs = ["v2.txt"], package_dir = "/app")
+
+oci_image(name = "v1", entrypoint = "/app/v1.txt", layers = [":base_layer", ":v1_layer"], ref = "demo:v1")
+
+oci_image(name = "v2", entrypoint = "/app/v2.txt", layers = [":base_layer", ":v2_layer"], ref = "demo:v2")
+
+genrule(
+    name = "diff_report",
+    srcs = [
+        ":v1",
+        ":v2",
+    ],
+    outs = ["diff.txt"],
+    cmd = "$(execpath :imagediff) $(locations :v1) $(locations :v2) > $@",
+    tools = [":imagediff"],
+)

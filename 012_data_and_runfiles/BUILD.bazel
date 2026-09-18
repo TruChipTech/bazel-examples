@@ -1,0 +1,12 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "reader",
+    srcs = ["reader.py"],
+    main = "reader.py",
+
+    # Everything listed here is copied (or symlinked) into the runfiles tree
+    # that sits beside the executable. This is how a Bazel program gets access
+    # to files at RUNTIME, as opposed to srcs/deps which are BUILD-time inputs.
+    data = ["greeting.txt"],
+)

@@ -1,0 +1,48 @@
+config_setting(
+    name = "linux",
+    constraint_values = ["@platforms//os:linux"],
+)
+
+config_setting(
+    name = "macos",
+    constraint_values = ["@platforms//os:macos"],
+)
+
+# --- Pattern 1: a permissive default -----------------------------------------
+genrule(
+    name = "with_default",
+    outs = ["with_default.txt"],
+    cmd = select({
+        ":linux": "echo 'linux path' > $@",
+        ":macos": "echo 'macos path' > $@",
+        "//conditions:default": "echo 'generic fallback' > $@",
+    }),
+)
+
+# --- Pattern 2: NO default, with a helpful error -----------------------------
+# Omitting //conditions:default makes unsupported platforms a BUILD FAILURE.
+# no_match_error replaces Bazel's generic message with an actionable one.
+genrule(
+    name = "strict",
+    outs = ["strict.txt"],
+    cmd = select(
+        {
+            ":linux": "echo 'linux only' > $@",
+            ":macos": "echo 'macos only' > $@",
+        },
+        no_match_error = "This target supports Linux and macOS only. " +
+                         "Build with --platforms=//path:linux_x86_64, or file " +
+                         "an issue to request another platform.",
+    ),
+)
+
+# --- Pattern 3: default that selects nothing ---------------------------------
+# A common idiom: the feature is simply absent elsewhere.
+genrule(
+    name = "optional_feature",
+    outs = ["optional.txt"],
+    cmd = "echo 'extras:' > $@ && " + select({
+        ":linux": "echo '  epoll' >> $@",
+        "//conditions:default": "true",  # a no-op command
+    }),
+)

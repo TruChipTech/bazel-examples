@@ -1,0 +1,7 @@
+# This package is NOT in :internal_users. Depending on //...core:engine from
+# here fails at analysis time - try it.
+genrule(
+    name = "noop",
+    outs = ["noop.txt"],
+    cmd = "echo 'not a member of internal_users' > $@",
+)

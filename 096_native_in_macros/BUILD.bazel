@@ -1,0 +1,17 @@
+load(":defs.bzl", "library_with_tests", "package_info")
+
+library_with_tests(
+    name = "mathx",
+    srcs = ["mathx.py"],
+    test_files = [
+        "double_test.py",
+        "triple_test.py",
+    ],
+)
+
+# native.package_name() resolves to this package's path.
+genrule(
+    name = "where_am_i",
+    outs = ["location.txt"],
+    cmd = "echo 'package: %s' > $@" % package_info().package,
+)

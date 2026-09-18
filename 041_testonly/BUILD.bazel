@@ -1,0 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+
+py_library(
+    name = "real_clock",
+    srcs = ["real_clock.py"],
+    imports = ["."],
+)
+
+# testonly = True means: only other testonly targets, or tests, may depend on
+# this. Bazel enforces it at analysis time.
+py_library(
+    name = "fake_clock",
+    testonly = True,
+    srcs = ["fake_clock.py"],
+    imports = ["."],
+)
+
+py_test(
+    name = "clock_test",
+    srcs = ["clock_test.py"],
+    # Tests are implicitly testonly, so this dependency is allowed.
+    deps = [":fake_clock"],
+)

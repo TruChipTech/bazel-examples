@@ -1,0 +1,30 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+pkg_tar(name = "layer", srcs = ["run.sh"], mode = "0755", package_dir = "/app")
+
+oci_image(
+    name = "image",
+    entrypoint = "/app/run.sh",
+    layers = [":layer"],
+    ref = "demo:config",
+)
+
+# The config blob is what a runtime reads to decide HOW to start the container.
+genrule(
+    name = "show_config",
+    srcs = [":image"],
+    outs = ["config_dump.json"],
+    cmd = """
+      layout=$$(echo $(locations :image))
+      manifest_digest=$$(cat $$layout/digest.txt | cut -d: -f2)
+      config_digest=$$(python3 -c "
+import json,sys
+m=json.load(open('$$layout/blobs/sha256/'+'$$manifest_digest'))
+print(m['config']['digest'].split(':')[1])
+")
+      python3 -m json.tool $$layout/blobs/sha256/$$config_digest > $@
+    """,
+)

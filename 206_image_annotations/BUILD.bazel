@@ -1,0 +1,37 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+pkg_tar(name = "layer", srcs = ["app.txt"], package_dir = "/app")
+
+oci_image(
+    name = "image",
+    entrypoint = "/app/app.txt",
+    layers = [":layer"],
+    ref = "demo:annotated",
+)
+
+# Annotations live in the INDEX, next to the manifest descriptor. They are
+# metadata about the image that does not change the image's own digest.
+genrule(
+    name = "annotated_index",
+    srcs = [":image"],
+    outs = ["annotated_index.json"],
+    cmd = """
+      layout=$$(echo $(locations :image))
+      python3 - "$$layout" $@ <<'PY'
+import json, sys
+layout, out = sys.argv[1], sys.argv[2]
+index = json.load(open(layout + "/index.json"))
+index["manifests"][0].setdefault("annotations", {}).update({
+    "org.opencontainers.image.source": "https://github.com/example/demo",
+    "org.opencontainers.image.revision": "abc123def456",
+    "org.opencontainers.image.created": "1970-01-01T00:00:00Z",
+    "org.opencontainers.image.licenses": "Apache-2.0",
+    "org.opencontainers.image.title": "demo",
+})
+json.dump(index, open(out, "w"), indent=2, sort_keys=True)
+PY
+    """,
+)

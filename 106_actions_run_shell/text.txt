@@ -1,0 +1,2 @@
+Bazel builds Bazel projects. Bazel caches Bazel actions.
+Caching makes builds fast and builds reproducible.

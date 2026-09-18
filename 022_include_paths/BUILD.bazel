@@ -1,0 +1,23 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+# Without help, the include path would be the full workspace-relative path:
+#   #include "022_include_paths/include/mylib/strings.h"
+# strip_include_prefix removes a leading directory so consumers can write the
+# clean, stable path  #include "mylib/strings.h".
+cc_library(
+    name = "strings",
+    srcs = ["src/strings.cc"],
+    hdrs = ["include/mylib/strings.h"],
+
+    # Remove this prefix from the header's include path.
+    strip_include_prefix = "include",
+
+    # include_prefix = "acme"   would then ADD a prefix, giving
+    #   #include "acme/mylib/strings.h"
+)
+
+cc_binary(
+    name = "demo",
+    srcs = ["src/demo.cc"],
+    deps = [":strings"],
+)

@@ -1,0 +1,62 @@
+# =============================================================================
+# .bazelrc - repo-wide Bazel settings
+#
+# Bazel reads this file automatically. Every line has the form:
+#     <command> <flag>
+# where <command> is build/test/run/query/... or "common" for all of them.
+# Flags here are applied as if you had typed them on the command line.
+# Samples 033 and 034 explain this file in detail.
+# =============================================================================
+
+# --- Toolchain discovery (environment-specific) ------------------------------
+# This machine puts a ccache shim ahead of the real gcc on PATH. ccache cannot
+# write its temp files inside Bazel's sandbox, so we pin the real compiler.
+# On a machine without ccache these two lines are harmless.
+build --repo_env=CC=/usr/bin/gcc
+build --repo_env=CXX=/usr/bin/g++
+
+# There is no local JDK installed, so ask Bazel to download a hermetic one.
+# This is good practice anyway: it makes Java builds reproducible across
+# machines instead of depending on whatever JDK a developer happens to have.
+build --java_runtime_version=remotejdk_21
+build --tool_java_runtime_version=remotejdk_21
+
+# --- Quality of life ---------------------------------------------------------
+# Print the actual command line when an action fails - the single most useful
+# debugging flag in Bazel.
+build --verbose_failures
+
+# Show test output for failing tests instead of just a pass/fail summary.
+test --test_output=errors
+
+# Keep going after a failure so one broken target does not hide the others.
+# (Commented out by default; uncomment when auditing the whole repo.)
+# build --keep_going
+
+# --- Named configurations ----------------------------------------------------
+# Activate with: bazel build --config=<name> //...
+# See sample 034.
+
+# Fast, debuggable builds.
+build:dev -c fastbuild
+build:dev --strip=never
+
+# Optimized release builds with stamping enabled.
+build:release -c opt
+build:release --stamp
+build:release --workspace_status_command=./tools/workspace_status.sh
+
+# Verbose test runs that stream output as it happens.
+test:verbose --test_output=all
+test:verbose --test_summary=detailed
+test:verbose --nocache_test_results
+
+# A local disk cache shared by every build in this repo (sample 151).
+build:cached --disk_cache=~/.cache/bazel-disk-cache
+
+# --- Correctness guards ------------------------------------------------------
+# Fail the build if a BUILD file references a target it cannot see.
+build --nolegacy_external_runfiles
+
+# Use the new-style external repository layout.
+common --enable_bzlmod

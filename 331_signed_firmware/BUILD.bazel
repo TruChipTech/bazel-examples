@@ -1,0 +1,61 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//301_baremetal_basics:firmware.bzl", "firmware_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+firmware_binary(
+    name = "app_fw",
+    srcs = ["//301_baremetal_basics:boot.c"],
+    linker_script = "//301_baremetal_basics:flash.ld",
+)
+
+py_binary(name = "mkimage", srcs = ["mkimage.py"], main = "mkimage.py")
+
+py_binary(name = "verify_boot", srcs = ["verify_boot.py"], main = "verify_boot.py")
+
+# Wrap the raw flash image in a signed boot header.
+genrule(
+    name = "fw_image",
+    srcs = [":app_fw"],
+    outs = [
+        "fw_header.bin",
+        "fw_image.bin",
+    ],
+    cmd = "$(execpath :mkimage) $$(echo $(locations :app_fw) | tr ' ' '\\n' | grep '\\.bin$$') 7 0 $(location fw_header.bin) $(location fw_image.bin)",
+    tools = [":mkimage"],
+)
+
+# Sign the HEADER+PAYLOAD image. Signing after the header is built means the
+# version and slot fields are covered too - otherwise an attacker could
+# downgrade the version without invalidating the signature.
+genrule(
+    name = "fw_signature",
+    srcs = [
+        "fw_image.bin",
+        "@signing_keys//:rsa_private.pem",
+    ],
+    outs = ["fw_image.sig"],
+    cmd = "openssl dgst -sha256 -sign $(location @signing_keys//:rsa_private.pem) -out $@ $(location fw_image.bin)",
+)
+
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# Simulates the ROM bootloader: header check, integrity, rollback, signature.
+sh_test(
+    name = "boot_test",
+    size = "small",
+    srcs = ["boot_test.sh"],
+    args = [
+        "$(rootpath :verify_boot)",
+        "$(rootpath fw_image.bin)",
+        "$(rootpath fw_image.sig)",
+        "$(rootpath @signing_keys//:rsa_public.pem)",
+        "5",  # minimum acceptable firmware version
+    ],
+    data = [
+        "fw_image.bin",
+        "fw_image.sig",
+        ":verify_boot",
+        "@signing_keys//:rsa_public.pem",
+    ],
+)

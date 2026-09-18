@@ -1,0 +1,4 @@
+load("//129_cross_compilation:defs.bzl", "arch_header")
+
+# One target, built for many platforms by CI. See README.md.
+arch_header(name = "arch")

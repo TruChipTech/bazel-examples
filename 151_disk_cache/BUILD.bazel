@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+# A few targets with real compile work, so cache effects are measurable.
+cc_library(
+    name = "lib_a",
+    srcs = ["lib_a.cc"],
+    hdrs = ["lib_a.h"],
+)
+
+cc_library(
+    name = "lib_b",
+    srcs = ["lib_b.cc"],
+    hdrs = ["lib_b.h"],
+    deps = [":lib_a"],
+)
+
+cc_binary(
+    name = "app",
+    srcs = ["app.cc"],
+    deps = [":lib_b"],
+)

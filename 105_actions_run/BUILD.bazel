@@ -1,0 +1,17 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":wordfreq.bzl", "wordfreq")
+
+py_binary(
+    name = "wordfreq",
+    srcs = ["wordfreq.py"],
+    main = "wordfreq.py",
+    visibility = ["//visibility:public"],
+)
+
+wordfreq(
+    name = "frequencies",
+    srcs = [
+        "doc1.txt",
+        "doc2.txt",
+    ],
+)

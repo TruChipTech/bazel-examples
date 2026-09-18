@@ -1,0 +1,62 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+string_flag(
+    name = "ssl",
+    build_setting_default = "openssl",
+    values = [
+        "boringssl",
+        "openssl",
+    ],
+)
+
+config_setting(
+    name = "use_boring",
+    flag_values = {":ssl": "boringssl"},
+)
+
+# Both implementations expose the SAME module name, so consumers are identical.
+py_library(
+    name = "crypto_openssl",
+    srcs = ["crypto_openssl.py"],
+    imports = ["."],
+)
+
+py_library(
+    name = "crypto_boring",
+    srcs = ["crypto_boring.py"],
+    imports = ["."],
+)
+
+# THE PATTERN: one stable label, resolved per configuration.
+# Every consumer depends on ":crypto" and never learns which one it got.
+alias(
+    name = "crypto_impl",
+    actual = select({
+        ":use_boring": ":crypto_boring",
+        "//conditions:default": ":crypto_openssl",
+    }),
+)
+
+# A thin wrapper normalizes the module name so `from crypto import backend`
+# works with either implementation.
+genrule(
+    name = "crypto_shim",
+    srcs = [":crypto_impl"],
+    outs = ["crypto.py"],
+    cmd = "cp $(SRCS) $@",
+)
+
+py_library(
+    name = "crypto",
+    srcs = [":crypto.py"],
+    imports = ["."],
+)
+
+py_binary(
+    name = "main",
+    srcs = ["main.py"],
+    imports = ["."],
+    main = "main.py",
+    deps = [":crypto"],
+)

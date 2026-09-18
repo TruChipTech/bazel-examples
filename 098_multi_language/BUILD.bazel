@@ -1,0 +1,4 @@
+test_suite(
+    name = "all_tests",
+    tests = ["//098_multi_language/e2e:roundtrip_test"],
+)

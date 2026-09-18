@@ -1,0 +1,4 @@
+load(":lib_test.bzl", "lib_test_suite")
+
+# One call declares every test target and a test_suite named :lib_tests.
+lib_test_suite(name = "lib_tests")

@@ -1,0 +1,13 @@
+load("//105_actions_run:wordfreq.bzl", "wordfreq")
+
+# A local copy avoids depending on another package's unexported source file.
+wordfreq(
+    name = "subject",
+    srcs = ["notes.txt"],
+)
+
+genrule(
+    name = "simple",
+    outs = ["simple.txt"],
+    cmd = "echo 'a target to inspect' > $@",
+)

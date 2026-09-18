@@ -1,0 +1,42 @@
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files", "pkg_mkdirs", "strip_prefix")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+# pkg_files gives per-file control: destination, permissions, ownership.
+# It produces a MAPPING, not an archive - archives consume these.
+pkg_files(
+    name = "scripts",
+    srcs = glob(["scripts/*.sh"]),
+    # 0o755: executable. pkg_attributes is how you set the mode explicitly
+    # instead of inheriting whatever the source file happens to have.
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/usr/local/bin",
+    strip_prefix = strip_prefix.from_pkg("scripts"),
+)
+
+pkg_files(
+    name = "docs",
+    srcs = glob(["docs/*"]),
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "/usr/share/doc/demo",
+    strip_prefix = strip_prefix.from_pkg("docs"),
+)
+
+# Empty directories that must exist in the installed layout.
+pkg_mkdirs(
+    name = "runtime_dirs",
+    attributes = pkg_attributes(mode = "0750"),
+    dirs = [
+        "/var/log/demo",
+        "/var/lib/demo",
+    ],
+)
+
+pkg_tar(
+    name = "app_package",
+    extension = "tar.gz",
+    srcs = [
+        ":docs",
+        ":runtime_dirs",
+        ":scripts",
+    ],
+)

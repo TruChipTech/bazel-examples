@@ -1,0 +1,5 @@
+genrule(
+    name = "note",
+    outs = ["note.txt"],
+    cmd = "echo 'see README.md - publishing to the Bazel Central Registry' > $@",
+)

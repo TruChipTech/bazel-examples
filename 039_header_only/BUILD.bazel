@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+# A cc_library with hdrs but NO srcs. Bazel produces no object file and no
+# archive - the target exists purely to carry the header and its include path
+# to consumers.
+cc_library(
+    name = "vec",
+    hdrs = ["vec.h"],
+)
+
+cc_binary(
+    name = "use_vec",
+    srcs = ["use_vec.cc"],
+    deps = [":vec"],
+)

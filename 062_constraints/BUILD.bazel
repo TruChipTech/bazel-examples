@@ -1,0 +1,86 @@
+# ---------------------------------------------------------------------------
+# A constraint_setting is a DIMENSION (a question).
+# A constraint_value is an ANSWER to that question.
+# A platform is a SET of answers describing one machine.
+# ---------------------------------------------------------------------------
+
+# Dimension: which GPU vendor does this machine have?
+constraint_setting(
+    name = "gpu_vendor",
+    default_constraint_value = ":gpu_none",
+    visibility = ["//visibility:public"],
+)
+
+constraint_value(
+    name = "gpu_none",
+    constraint_setting = ":gpu_vendor",
+    visibility = ["//visibility:public"],
+)
+
+constraint_value(
+    name = "gpu_nvidia",
+    constraint_setting = ":gpu_vendor",
+    visibility = ["//visibility:public"],
+)
+
+constraint_value(
+    name = "gpu_amd",
+    constraint_setting = ":gpu_vendor",
+    visibility = ["//visibility:public"],
+)
+
+# Dimension: is this a CI machine or a developer workstation?
+constraint_setting(
+    name = "machine_role",
+    visibility = ["//visibility:public"],
+)
+
+constraint_value(
+    name = "role_ci",
+    constraint_setting = ":machine_role",
+    visibility = ["//visibility:public"],
+)
+
+constraint_value(
+    name = "role_dev",
+    constraint_setting = ":machine_role",
+    visibility = ["//visibility:public"],
+)
+
+# Platforms combine constraints from several settings, including the built-in
+# @platforms//os and @platforms//cpu dimensions.
+platform(
+    name = "ci_linux_nvidia",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+        ":gpu_nvidia",
+        ":role_ci",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "dev_linux_nogpu",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+        ":gpu_none",
+        ":role_dev",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "has_nvidia",
+    constraint_values = [":gpu_nvidia"],
+)
+
+genrule(
+    name = "gpu_report",
+    outs = ["gpu.txt"],
+    cmd = select({
+        ":has_nvidia": "echo 'CUDA kernels enabled' > $@",
+        "//conditions:default": "echo 'CPU fallback' > $@",
+    }),
+)

@@ -1,0 +1,26 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
+
+py_binary(
+    name = "show",
+    srcs = ["show.py"],
+    # args are baked into the launcher and passed on every `bazel run`.
+    # Anything you add after `--` on the command line comes AFTER these.
+    args = [
+        "--baked-in",
+        "always-present",
+    ],
+    env = {
+        "GREETING": "hello from the BUILD file",
+        "MODE": "demo",
+    },
+    main = "show.py",
+)
+
+py_test(
+    name = "env_test",
+    srcs = ["env_test.py"],
+    # env on a test is the reliable way to pass configuration. The test
+    # sandbox scrubs most of the ambient environment, so inheriting a variable
+    # from your shell does NOT work by default.
+    env = {"EXPECTED": "from-build-file"},
+)

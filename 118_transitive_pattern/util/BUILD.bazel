@@ -1,0 +1,8 @@
+load("//118_transitive_pattern:minilang.bzl", "minilang_library")
+
+minilang_library(
+    name = "util",
+    srcs = ["util.ml"],
+    visibility = ["//118_transitive_pattern:__subpackages__"],
+    deps = ["//118_transitive_pattern/core"],
+)

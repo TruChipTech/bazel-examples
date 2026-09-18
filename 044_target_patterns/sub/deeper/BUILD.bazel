@@ -1,0 +1,1 @@
+genrule(name = "deep_a", outs = ["deep_a.txt"], cmd = "echo deep > $@")

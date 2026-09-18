@@ -1,0 +1,8 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+# sh_binary makes a shell script a first-class build target so that other
+# targets can depend on it, pass it as a tool, or run it via `bazel run`.
+sh_binary(
+    name = "report",
+    srcs = ["report.sh"],
+)

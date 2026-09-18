@@ -1,0 +1,20 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load(":defs.bzl", "release_artifact")
+
+string_flag(
+    name = "channel",
+    build_setting_default = "dev",
+    visibility = ["//visibility:public"],
+)
+
+# No matter what flags you pass, this target builds itself in -c opt with
+# channel=beta, because its rule carries a transition.
+release_artifact(
+    name = "beta_release",
+    channel = "beta",
+)
+
+release_artifact(
+    name = "stable_release",
+    channel = "stable",
+)

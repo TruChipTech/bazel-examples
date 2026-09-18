@@ -1,0 +1,14 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":artifact.bzl", "oci_artifact")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "mkartifact", srcs = ["mkartifact.py"], main = "mkartifact.py")
+
+# An SBOM shipped as an OCI artifact rather than as a file on a web server.
+oci_artifact(
+    name = "sbom_artifact",
+    artifact_type = "application/spdx+json",
+    payload = "sbom.json",
+    ref = "sbom:v1",
+)

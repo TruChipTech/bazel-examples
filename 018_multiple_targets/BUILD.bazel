@@ -1,0 +1,35 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+# One package can - and usually should - hold several fine-grained targets.
+# Fine-grained targets mean better caching and more parallelism: touching
+# cache.cc rebuilds `cache` and `server`, but never `storage`.
+
+cc_library(
+    name = "storage",
+    srcs = ["storage.cc"],
+    hdrs = ["storage.h"],
+)
+
+cc_library(
+    name = "cache",
+    srcs = ["cache.cc"],
+    hdrs = ["cache.h"],
+    deps = [":storage"],
+)
+
+cc_binary(
+    name = "server",
+    srcs = ["server.cc"],
+    deps = [
+        ":cache",
+        ":storage",
+    ],
+)
+
+cc_test(
+    name = "storage_test",
+    srcs = ["storage_test.cc"],
+    deps = [":storage"],
+)

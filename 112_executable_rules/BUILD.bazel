@@ -1,0 +1,12 @@
+load(":runner.bzl", "task_runner")
+
+task_runner(
+    name = "deploy",
+    data = ["notes.txt"],
+    steps = [
+        "validate configuration",
+        "upload artifacts",
+        "restart service",
+    ],
+    task_name = "deploy-to-staging",
+)

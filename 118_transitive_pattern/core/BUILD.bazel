@@ -1,0 +1,7 @@
+load("//118_transitive_pattern:minilang.bzl", "minilang_library")
+
+minilang_library(
+    name = "core",
+    srcs = ["core.ml"],
+    visibility = ["//118_transitive_pattern:__subpackages__"],
+)

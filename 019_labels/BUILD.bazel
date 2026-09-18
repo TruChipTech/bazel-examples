@@ -1,0 +1,50 @@
+# ---------------------------------------------------------------------------
+# Label syntax reference. Every one of these forms names a target.
+#
+#   //path/to/pkg:target      absolute, from the workspace root  (ALWAYS SAFE)
+#   //path/to/pkg             shorthand for //path/to/pkg:pkg
+#   :target                   a target in the CURRENT package
+#   target                    same as :target inside deps/srcs
+#   @repo//path/to/pkg:tgt    a target in an EXTERNAL repository
+#   //path/to/pkg:file.txt    a source FILE (if exported/in this package)
+#
+# Wildcards, valid only on the command line and in query:
+#   //pkg:all                 every target in that one package
+#   //pkg/...                 every target in that package and below
+#   //...                     every target in the workspace
+# ---------------------------------------------------------------------------
+
+exports_files(["data.txt"])
+
+genrule(
+    name = "local_ref",
+    # Relative label: same package. Equivalent to //019_labels:data.txt
+    srcs = [":data.txt"],
+    outs = ["local.txt"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "absolute_ref",
+    # Absolute label: works verbatim no matter which package copies this line.
+    srcs = ["//019_labels:data.txt"],
+    outs = ["absolute.txt"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "cross_package_ref",
+    # A target owned by a different package.
+    srcs = ["//017_exports_files/licenses:LICENSE.txt"],
+    outs = ["license_copy.txt"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "external_ref",
+    # A target inside an external module declared in MODULE.bazel.
+    # @bazel_skylib is the repo name; //lib is the package inside it.
+    srcs = ["@bazel_skylib//:LICENSE"],
+    outs = ["external.txt"],
+    cmd = "cp $< $@",
+)

@@ -1,0 +1,53 @@
+# Platform definitions for a few target machines. Declaring a platform costs
+# nothing; it is just a named set of constraint values.
+
+platform(
+    name = "linux_x86_64",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+)
+
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:linux",
+    ],
+)
+
+platform(
+    name = "macos_arm64",
+    constraint_values = [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:macos",
+    ],
+)
+
+# A platform can EXTEND another, inheriting its constraints and adding more.
+platform(
+    name = "linux_x86_64_ci",
+    constraint_values = ["//062_constraints:role_ci"],
+    parents = [":linux_x86_64"],
+)
+
+config_setting(
+    name = "is_arm",
+    constraint_values = ["@platforms//cpu:aarch64"],
+)
+
+config_setting(
+    name = "is_macos",
+    constraint_values = ["@platforms//os:macos"],
+)
+
+genrule(
+    name = "target_report",
+    outs = ["target.txt"],
+    cmd = select({
+        ":is_macos": "echo 'building for macOS' > $@",
+        ":is_arm": "echo 'building for ARM Linux' > $@",
+        "//conditions:default": "echo 'building for x86_64 Linux' > $@",
+    }),
+)

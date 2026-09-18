@@ -1,0 +1,28 @@
+load("@protobuf//bazel:java_proto_library.bzl", "java_proto_library")
+load("@rules_java//java:defs.bzl", "java_binary")
+
+# The SAME proto_library from sample 074, now generating Java.
+# The C++ binding in sample 075 and this one cannot drift apart, because both
+# are generated from one source of truth in one build.
+java_proto_library(
+    name = "event_java_proto",
+    deps = ["//074_proto_library:event_proto"],
+)
+
+# Java enforces STRICT DEPS: a file that imports a symbol must depend on the
+# target that DIRECTLY provides it, even if it would arrive transitively.
+# ReadEvent.java imports samples.common.Common.Severity, so it needs this.
+java_proto_library(
+    name = "common_java_proto",
+    deps = ["//074_proto_library:common_proto"],
+)
+
+java_binary(
+    name = "read_event",
+    srcs = ["src/ReadEvent.java"],
+    main_class = "com.example.events.ReadEvent",
+    deps = [
+        ":common_java_proto",
+        ":event_java_proto",
+    ],
+)

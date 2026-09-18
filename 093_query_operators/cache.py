@@ -1,0 +1,1 @@
+def cache(): return 'cache'

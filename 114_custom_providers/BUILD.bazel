@@ -1,0 +1,24 @@
+load(":asset.bzl", "asset_bundle", "asset_library")
+
+asset_library(
+    name = "styles",
+    srcs = [
+        "base.css",
+        "theme.css",
+    ],
+)
+
+asset_library(
+    name = "scripts",
+    srcs = [
+        "app.js",
+        "util.js",
+    ],
+    entry_point = "app.js",
+    deps = [":styles"],
+)
+
+asset_bundle(
+    name = "web_bundle",
+    library = ":scripts",
+)

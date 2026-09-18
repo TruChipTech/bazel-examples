@@ -1,0 +1,10 @@
+genrule(name = "top_a", outs = ["top_a.txt"], cmd = "echo a > $@")
+
+genrule(name = "top_b", outs = ["top_b.txt"], cmd = "echo b > $@")
+
+genrule(
+    name = "manual_only",
+    outs = ["manual.txt"],
+    cmd = "echo manual > $@",
+    tags = ["manual"],
+)

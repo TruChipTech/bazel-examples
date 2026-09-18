@@ -1,0 +1,1 @@
+VALUE = 'mid_b'

@@ -1,0 +1,47 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# ---------------------------------------------------------------------------
+# config_setting can match on three different things:
+#   values             - Bazel's own built-in flags
+#   define_values      - values passed with --define
+#   constraint_values  - platform constraints
+#   flag_values        - custom build settings (sample 059)
+# ---------------------------------------------------------------------------
+
+# Match a built-in Bazel flag.
+config_setting(
+    name = "opt_build",
+    values = {"compilation_mode": "opt"},
+)
+
+config_setting(
+    name = "dbg_build",
+    values = {"compilation_mode": "dbg"},
+)
+
+# Match a --define. Activate with: --define=flavor=premium
+config_setting(
+    name = "premium",
+    define_values = {"flavor": "premium"},
+)
+
+# Several conditions in one setting are ANDed together.
+config_setting(
+    name = "premium_opt",
+    define_values = {"flavor": "premium"},
+    values = {"compilation_mode": "opt"},
+)
+
+cc_binary(
+    name = "app",
+    srcs = ["app.cc"],
+    copts = select({
+        # Order does not matter; Bazel requires that at most one branch match
+        # (unless one is strictly more specific than another, as here).
+        ":premium_opt": [r'-DFLAVOR=\"premium-optimized\"'],
+        ":premium": [r'-DFLAVOR=\"premium\"'],
+        ":opt_build": [r'-DFLAVOR=\"standard-optimized\"'],
+        ":dbg_build": [r'-DFLAVOR=\"standard-debug\"'],
+        "//conditions:default": [r'-DFLAVOR=\"standard\"'],
+    }),
+)

@@ -1,0 +1,21 @@
+load("@rules_python//python:defs.bzl", "py_library")
+load(":analyze.bzl", "inventory_report")
+
+py_library(name = "base", srcs = ["base.py"], imports = ["."])
+
+py_library(
+    name = "feature",
+    srcs = [
+        "feature_a.py",
+        "feature_b.py",
+    ],
+    imports = ["."],
+    deps = [":base"],
+)
+
+# No command-line flags needed: the rule applies the aspect itself, so this is
+# a normal target that CI builds like any other.
+inventory_report(
+    name = "inventory",
+    targets = [":feature"],
+)

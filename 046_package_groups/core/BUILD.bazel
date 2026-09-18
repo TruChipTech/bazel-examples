@@ -1,0 +1,10 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(
+    name = "engine",
+    srcs = ["engine.py"],
+    imports = ["."],
+    # Instead of listing packages here, point at the group. Adding a new
+    # consumer becomes a one-line edit in ONE file.
+    visibility = ["//046_package_groups:internal_users"],
+)

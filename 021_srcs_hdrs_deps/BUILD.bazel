@@ -1,0 +1,19 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+cc_library(
+    name = "api",
+    # srcs: compiled into this target. Private headers belong here too - they
+    # are visible to THIS library's sources but to nobody else.
+    srcs = [
+        "impl.cc",
+        "private_impl.h",
+    ],
+    # hdrs: the public interface. Only these may be included by consumers.
+    hdrs = ["public_api.h"],
+)
+
+cc_binary(
+    name = "user",
+    srcs = ["user.cc"],
+    deps = [":api"],
+)

@@ -1,0 +1,6 @@
+# No targets needed - this sample is about the `bazel mod` command family.
+genrule(
+    name = "placeholder",
+    outs = ["note.txt"],
+    cmd = "echo 'see README.md - this sample is about bazel mod' > $@",
+)

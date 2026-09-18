@@ -1,0 +1,5 @@
+filegroup(
+    name = "values",
+    srcs = ["values.txt"],
+    visibility = ["//050_capstone_basics:__subpackages__"],
+)

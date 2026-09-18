@@ -1,0 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+# A library is a reusable unit of compilation. It is never executed directly;
+# it exists to be depended on.
+cc_library(
+    name = "math_utils",
+    srcs = ["math_utils.cc"],  # compiled into the library
+    hdrs = ["math_utils.h"],   # exposed to anything that depends on this target
+)
+
+cc_binary(
+    name = "main",
+    srcs = ["main.cc"],
+    # deps wires one target to another. This single line is what lets main.cc
+    # do #include "math_utils.h" - without it the include fails, even though
+    # the file sits right next to main.cc.
+    deps = [":math_utils"],
+)

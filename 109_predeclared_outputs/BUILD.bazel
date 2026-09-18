@@ -1,0 +1,27 @@
+load(":split.bzl", "named_report", "split_file")
+
+split_file(
+    name = "split",
+    src = "data.txt",
+    head_lines = 3,
+    head_out = "first_three.txt",
+    tail_out = "the_rest.txt",
+)
+
+# Because head_out is a PREDECLARED output, this label exists and can be
+# depended on directly - unlike a declare_file output (sample 107).
+genrule(
+    name = "head_only",
+    srcs = ["first_three.txt"],
+    outs = ["head_copy.txt"],
+    cmd = "cp $< $@",
+)
+
+named_report(name = "quarterly")
+
+genrule(
+    name = "use_report",
+    srcs = ["quarterly_summary.txt"],
+    outs = ["report_copy.txt"],
+    cmd = "cp $< $@",
+)

@@ -1,0 +1,27 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+# linkstatic gives a binary with no shared-library dependencies, which is what
+# lets the image contain literally one file.
+cc_binary(
+    name = "server",
+    srcs = ["server.cc"],
+    linkstatic = True,
+)
+
+pkg_tar(
+    name = "layer",
+    srcs = [":server"],
+    mode = "0755",
+    package_dir = "/usr/local/bin",
+)
+
+oci_image(
+    name = "image",
+    entrypoint = "/usr/local/bin/server",
+    layers = [":layer"],
+    ref = "demo:cc",
+)

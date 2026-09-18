@@ -1,0 +1,25 @@
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@bazel_skylib//rules:run_binary.bzl", "run_binary")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "format_report",
+    srcs = ["format_report.py"],
+    main = "format_report.py",
+)
+
+run_binary(
+    name = "actual_report",
+    args = ["$(execpath actual_report.txt)"],
+    outs = ["actual_report.txt"],
+    tool = ":format_report",
+)
+
+# diff_test fails if the two files differ, and prints the diff.
+# This is "golden file" or "characterization" testing.
+diff_test(
+    name = "report_matches_golden",
+    size = "small",
+    file1 = "expected_report.txt",
+    file2 = ":actual_report.txt",
+)

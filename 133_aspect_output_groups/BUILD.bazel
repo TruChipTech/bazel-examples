@@ -1,0 +1,7 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(name = "models", srcs = ["models.py"], imports = ["."])
+
+py_library(name = "services", srcs = ["services.py"], imports = ["."], deps = [":models"])
+
+py_library(name = "handlers", srcs = ["handlers.py"], imports = ["."], deps = [":services"])

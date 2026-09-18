@@ -1,0 +1,73 @@
+load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+
+string_flag(
+    name = "env",
+    build_setting_default = "dev",
+    values = [
+        "dev",
+        "prod",
+        "staging",
+    ],
+)
+
+bool_flag(
+    name = "verbose",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "is_prod",
+    flag_values = {":env": "prod"},
+)
+
+config_setting(
+    name = "is_staging",
+    flag_values = {":env": "staging"},
+)
+
+config_setting(
+    name = "is_verbose",
+    flag_values = {":verbose": "true"},
+)
+
+config_setting(
+    name = "is_linux",
+    constraint_values = ["@platforms//os:linux"],
+)
+
+# --- OR: matches if ANY of match_any matches ---------------------------------
+selects.config_setting_group(
+    name = "deployed",  # prod OR staging
+    match_any = [
+        ":is_prod",
+        ":is_staging",
+    ],
+)
+
+# --- AND: matches only if ALL of match_all match -----------------------------
+selects.config_setting_group(
+    name = "verbose_linux",  # verbose AND linux
+    match_all = [
+        ":is_linux",
+        ":is_verbose",
+    ],
+)
+
+genrule(
+    name = "deploy_config",
+    outs = ["deploy.conf"],
+    cmd = select({
+        ":deployed": "echo 'telemetry=on retention=30d' > $@",
+        "//conditions:default": "echo 'telemetry=off retention=1d' > $@",
+    }),
+)
+
+genrule(
+    name = "log_config",
+    outs = ["log.conf"],
+    cmd = select({
+        ":verbose_linux": "echo 'level=trace sink=journald' > $@",
+        "//conditions:default": "echo 'level=info sink=stdout' > $@",
+    }),
+)

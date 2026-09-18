@@ -1,0 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+py_library(
+    name = "impl_v2",
+    srcs = ["impl.py"],
+    imports = ["."],
+    visibility = ["//visibility:public"],
+)
+
+# alias gives a target a second, stable name. Consumers depend on the alias;
+# you are then free to repoint it without touching a single consumer.
+alias(
+    name = "impl",
+    actual = ":impl_v2",
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "main",
+    srcs = ["main.py"],
+    main = "main.py",
+    deps = [":impl"],  # indirection through the alias
+)

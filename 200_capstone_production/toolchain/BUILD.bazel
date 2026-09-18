@@ -1,0 +1,20 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//200_capstone_production/rules:toolchain.bzl", "config_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+toolchain_type(name = "config_toolchain_type")
+
+py_binary(name = "gen_config", srcs = ["gen_config.py"], main = "gen_config.py")
+
+config_toolchain(
+    name = "standard_impl",
+    flavor = "standard",
+    generator = ":gen_config",
+)
+
+toolchain(
+    name = "standard_toolchain",
+    toolchain = ":standard_impl",
+    toolchain_type = ":config_toolchain_type",
+)

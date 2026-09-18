@@ -1,0 +1,20 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+
+py_library(
+    name = "validators",
+    srcs = ["validators.py"],
+    imports = ["."],
+)
+
+py_test(
+    name = "validators_test",
+    srcs = ["validators_test.py"],
+
+    # size affects the default timeout and how Bazel schedules the test:
+    #   small  ->  60s   (the default; use it for unit tests)
+    #   medium -> 300s
+    #   large  -> 900s
+    #   enormous -> 3600s
+    size = "small",
+    deps = [":validators"],
+)

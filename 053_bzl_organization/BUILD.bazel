@@ -1,0 +1,7 @@
+load("//053_bzl_organization/build_defs:rules.bzl", "strict_cc_library")
+
+strict_cc_library(
+    name = "widget",
+    srcs = ["widget.cc"],
+    hdrs = ["widget.h"],
+)

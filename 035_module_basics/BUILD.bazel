@@ -1,0 +1,13 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+
+# This rule comes from bazel_skylib, an EXTERNAL module. It is available only
+# because //MODULE.bazel contains:
+#     bazel_dep(name = "bazel_skylib", version = "1.8.2")
+write_file(
+    name = "hello_from_skylib",
+    out = "hello.txt",
+    content = [
+        "This file was produced by write_file,",
+        "a rule from the external module bazel_skylib.",
+    ],
+)

@@ -1,0 +1,50 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":defs.bzl", "compiler_toolchain", "mini_compile")
+
+# Public because sample 125 registers toolchains that reference these targets.
+# Registered toolchains are analyzed in EVERY build, so anything they point at
+# must be visible from wherever the toolchain() rule lives.
+package(default_visibility = ["//visibility:public"])
+
+toolchain_type(name = "compiler_type")
+
+py_binary(
+    name = "fast",
+    srcs = ["compile_fast.py"],
+    main = "compile_fast.py",
+)
+
+py_binary(
+    name = "reference",
+    srcs = ["compile_ref.py"],
+    main = "compile_ref.py",
+)
+
+compiler_toolchain(
+    name = "fast_impl",
+    compiler = ":fast",
+    flavor = "fast",
+)
+
+compiler_toolchain(
+    name = "reference_impl",
+    compiler = ":reference",
+    flavor = "reference",
+)
+
+toolchain(
+    name = "fast_toolchain",
+    toolchain = ":fast_impl",
+    toolchain_type = ":compiler_type",
+)
+
+toolchain(
+    name = "reference_toolchain",
+    toolchain = ":reference_impl",
+    toolchain_type = ":compiler_type",
+)
+
+mini_compile(
+    name = "hello_compiled",
+    src = "hello.mini",
+)

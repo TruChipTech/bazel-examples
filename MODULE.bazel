@@ -1,0 +1,146 @@
+"""Root module for the Bazel-by-Example course.
+
+Bazel 9 is bzlmod-only: there is no WORKSPACE file anywhere in this repo.
+Every external dependency used by any of the 200 samples is declared here once,
+so a single `bazel build //...` covers the whole course.
+"""
+
+module(
+    name = "bazel_samples",
+    version = "1.0.0",
+)
+
+# --- Core rule sets -------------------------------------------------------
+# In Bazel 9 the language rules are NOT built in. cc_binary, py_binary,
+# sh_test, java_binary etc. all come from these modules and must be loaded.
+bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "rules_python", version = "1.7.0")
+bazel_dep(name = "rules_shell", version = "0.6.1")
+bazel_dep(name = "rules_java", version = "8.16.1")
+
+# --- Supporting libraries -------------------------------------------------
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
+bazel_dep(name = "protobuf", version = "31.1")
+bazel_dep(name = "rules_proto", version = "7.1.0")
+
+# --- Dev-only dependencies ------------------------------------------------
+# dev_dependency = True means consumers of this module never see these.
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2", dev_dependency = True)
+
+# =============================================================================
+# The declarations below exist to make samples 066-070 real and runnable.
+# In a normal project these would be interleaved with the bazel_deps above;
+# they are grouped and labelled here so each sample has something to point at.
+# =============================================================================
+
+# --- Sample 066: http_archive for code not in the registry -------------------
+# use_repo_rule lets MODULE.bazel call a repository rule directly, without
+# writing a module extension. This is the modern replacement for the old
+# WORKSPACE-era `http_archive(...)` call.
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "zlib_src",
+    build_file = "//066_http_archive:zlib.BUILD",
+    sha256 = "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23",
+    strip_prefix = "zlib-1.3.1",
+    urls = ["https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz"],
+)
+
+# --- Sample 067: renaming an external repository -----------------------------
+# The module is named "rules_license", but we refer to it as @licensing.
+bazel_dep(name = "rules_license", version = "1.0.0", repo_name = "licensing")
+
+# --- Sample 068: depending on a module that lives on local disk ---------------
+bazel_dep(name = "greeting_lib", version = "1.0.0")
+local_path_override(
+    module_name = "greeting_lib",
+    path = "068_local_path_override/greeting_lib",
+)
+
+# --- Sample 070: a custom module extension ------------------------------------
+build_metadata = use_extension("//070_module_extension:extension.bzl", "build_metadata")
+build_metadata.record(
+    name = "release",
+    channel = "stable",
+)
+use_repo(build_metadata, "build_metadata_repo")
+
+# --- Sample 069: pinning a module to an exact version -------------------------
+# Without this, Minimal Version Selection could raise rules_license if some
+# other dependency asked for a newer one. single_version_override forces it.
+single_version_override(
+    module_name = "rules_license",
+    version = "1.0.0",
+)
+
+# --- Sample 125: registering toolchains --------------------------------------
+# Registered toolchains are candidates for resolution in every build, without
+# anyone passing --extra_toolchains. Order matters: the FIRST match wins.
+register_toolchains(
+    "//125_toolchain_registration:fast_compiler_toolchain",
+    "//125_toolchain_registration:reference_compiler_toolchain",
+)
+
+# --- Sample 135: a repository rule invoked directly ---------------------------
+host_info = use_repo_rule("//135_repository_rules:repo.bzl", "host_info_repo")
+
+host_info(
+    name = "host_info",
+    probe_vars = [
+        "HOME",
+        "PATH",
+    ],
+)
+
+# --- Sample 136: a repository rule that runs a program and downloads ----------
+generated_lib = use_repo_rule("//136_repository_rule_execute:repo.bzl", "generated_lib_repo")
+
+generated_lib(
+    name = "generated_lib",
+    module_count = 3,
+)
+
+# --- Sample 137: a module extension aggregating tags --------------------------
+registry = use_extension("//137_module_extension_depth:extension.bzl", "registry")
+registry.component(
+    name = "auth",
+    owner = "identity-team",
+)
+registry.component(
+    name = "billing",
+    owner = "payments-team",
+)
+registry.component(
+    name = "search",
+    owner = "discovery-team",
+)
+use_repo(registry, "component_registry")
+
+# --- Sample 150: the capstone rule set's toolchain ---------------------------
+register_toolchains("//150_capstone_rule_set/toolchain:standard_toolchain")
+
+# --- Samples 123 and 129: default toolchains so `bazel build //...` works -----
+# Without these, those targets fail with "No matching toolchains found" unless
+# you pass --extra_toolchains. Registering them here makes the whole repo build
+# out of the box; the samples' READMEs still show the --extra_toolchains form.
+register_toolchains(
+    "//123_toolchain_basics:english_toolchain",
+    "//123_toolchain_basics:french_toolchain",
+    "//129_cross_compilation:x86_64_toolchain",
+    "//129_cross_compilation:aarch64_toolchain",
+    "//129_cross_compilation:armv7_toolchain",
+)
+
+# --- Sample 200: the capstone's config toolchain ------------------------------
+register_toolchains("//200_capstone_production/toolchain:standard_toolchain")
+
+# --- Sample 251: throwaway signing keys, generated not committed --------------
+# Generating the keypair in a repository rule keeps private keys out of git
+# entirely. It runs once per workspace and is cached, so signatures are stable
+# for every build on this machine. See 251_signing_basics/README.md.
+signing_keys = use_repo_rule("//251_signing_basics:keys.bzl", "signing_keys")
+
+signing_keys(name = "signing_keys")

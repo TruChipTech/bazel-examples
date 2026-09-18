@@ -1,0 +1,35 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+load(":sign_image.bzl", "sign_oci_image", "verify_oci_signature_test")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["sign_image.bzl"])
+
+pkg_tar(
+    name = "server_layer",
+    srcs = ["server.sh"],
+    mode = "0755",
+    package_dir = "/srv",
+)
+
+oci_image(
+    name = "server_image",
+    entrypoint = "/srv/server.sh",
+    layers = [":server_layer"],
+    ref = "registry.example.com/server:v1",
+)
+
+sign_oci_image(
+    name = "server_signature",
+    image = ":server_image",
+    image_ref = "registry.example.com/server:v1",
+    private_key = "@signing_keys//:rsa_private.pem",
+)
+
+verify_oci_signature_test(
+    name = "server_signature_test",
+    size = "small",
+    public_key = "@signing_keys//:rsa_public.pem",
+    signed_image = ":server_signature",
+)

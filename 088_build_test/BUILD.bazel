@@ -1,0 +1,25 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(name = "lib_a", srcs = ["lib_a.py"], imports = ["."])
+
+py_library(name = "lib_b", srcs = ["lib_b.py"], imports = ["."])
+
+genrule(
+    name = "generated_doc",
+    outs = ["doc.txt"],
+    cmd = "echo 'generated documentation' > $@",
+)
+
+# build_test turns "does this build?" into a TEST. Useful for targets that
+# nothing else depends on, which `bazel test //...` would otherwise never
+# build - documentation, examples, tools, platform-specific variants.
+build_test(
+    name = "everything_builds",
+    size = "small",
+    targets = [
+        ":generated_doc",
+        ":lib_a",
+        ":lib_b",
+    ],
+)

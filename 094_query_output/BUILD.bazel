@@ -1,0 +1,13 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(name = "leaf", srcs = ["leaf.py"], imports = ["."])
+
+py_library(name = "trunk", srcs = ["trunk.py"], imports = ["."], deps = [":leaf"])
+
+# genquery runs a query AT BUILD TIME and writes the result to a file. This
+# makes the query result an artifact other rules can consume.
+genquery(
+    name = "trunk_deps",
+    expression = "deps(//094_query_output:trunk)",
+    scope = [":trunk"],
+)

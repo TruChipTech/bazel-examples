@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package samples.event;
+
+// Thanks to strip_import_prefix in the BUILD file, the import path is the
+// short, stable name rather than the full workspace-relative path.
+import "common.proto";
+
+message Event {
+  string id = 1;
+  string message = 2;
+  samples.common.Severity severity = 3;
+  samples.common.Timestamp occurred_at = 4;
+  repeated string tags = 5;
+}
+
+message EventBatch {
+  repeated Event events = 1;
+}

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package samples.task;
+
+enum Priority {
+  PRIORITY_UNSPECIFIED = 0;
+  PRIORITY_LOW = 1;
+  PRIORITY_HIGH = 2;
+}
+
+message Task {
+  string id = 1;
+  string title = 2;
+  Priority priority = 3;
+  bool done = 4;
+}
+
+message TaskList {
+  repeated Task tasks = 1;
+}

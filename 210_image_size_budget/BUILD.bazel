@@ -1,0 +1,19 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_binary(name = "svc", srcs = ["svc.cc"], linkstatic = True)
+
+pkg_tar(name = "layer", srcs = [":svc"], mode = "0755", package_dir = "/bin")
+
+# A size budget, enforced as a test. Image bloat is gradual and nobody notices
+# it in review - a failing test does.
+sh_test(
+    name = "size_budget_test",
+    size = "small",
+    srcs = ["check_size.sh"],
+    args = ["102400"],  # 100 KiB ceiling
+    data = [":layer"],
+)

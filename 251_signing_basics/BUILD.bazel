@@ -1,0 +1,34 @@
+load(":sign.bzl", "sign_file", "verify_signature_test")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "keys.bzl",
+    "sign.bzl",
+])
+
+sign_file(
+    name = "artifact_rsa_sig",
+    payload = "artifact.txt",
+    private_key = "@signing_keys//:rsa_private.pem",
+)
+
+sign_file(
+    name = "artifact_ec_sig",
+    payload = "artifact.txt",
+    private_key = "@signing_keys//:ec_private.pem",
+)
+
+verify_signature_test(
+    name = "rsa_verify_test",
+    size = "small",
+    public_key = "@signing_keys//:rsa_public.pem",
+    signature = ":artifact_rsa_sig",
+)
+
+verify_signature_test(
+    name = "ec_verify_test",
+    size = "small",
+    public_key = "@signing_keys//:ec_public.pem",
+    signature = ":artifact_ec_sig",
+)

@@ -1,0 +1,10 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "modes",
+    srcs = ["modes.cc"],
+
+    # $(COMPILATION_MODE) is a Make variable that expands to the current mode.
+    # It lets a target react to -c without a select().
+    copts = ['-DBUILD_MODE=\\"$(COMPILATION_MODE)\\"'],
+)

@@ -1,0 +1,9 @@
+# The module is called "rules_license" but MODULE.bazel declared it with
+#     bazel_dep(name = "rules_license", version = "1.0.0", repo_name = "licensing")
+# so within THIS repository it is visible as @licensing.
+genrule(
+    name = "license_files",
+    srcs = ["@licensing//:LICENSE"],
+    outs = ["licensing_license.txt"],
+    cmd = "cp $(SRCS) $@",
+)

@@ -1,0 +1,16 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load(":release.bzl", "release_manifest")
+
+release_manifest(
+    name = "manifest",
+    app_name = "demo-service",
+)
+
+# The manifest ships inside the release artifact, so every deployed tarball
+# can be traced back to the exact commit that produced it.
+pkg_tar(
+    name = "release",
+    srcs = [":manifest"],
+    extension = "tar.gz",
+    package_dir = "/opt/demo",
+)

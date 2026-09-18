@@ -1,0 +1,27 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":site.bzl", "static_site")
+
+py_binary(
+    name = "gen_site",
+    srcs = ["gen_site.py"],
+    main = "gen_site.py",
+    visibility = ["//visibility:public"],
+)
+
+static_site(
+    name = "docs",
+    pages = [
+        "about",
+        "install",
+        "usage",
+    ],
+)
+
+# A tree artifact can be consumed like any other input. The consuming action
+# receives the whole directory.
+genrule(
+    name = "site_listing",
+    srcs = [":docs"],
+    outs = ["listing.txt"],
+    cmd = "ls -1 $(locations :docs) | sort > $@",
+)

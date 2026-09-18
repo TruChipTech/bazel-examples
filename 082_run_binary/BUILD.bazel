@@ -1,0 +1,21 @@
+load("@bazel_skylib//rules:run_binary.bzl", "run_binary")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "csv_to_json",
+    srcs = ["csv_to_json.py"],
+    main = "csv_to_json.py",
+)
+
+# run_binary is the structured alternative to a genrule that shells out to a
+# tool. No shell is involved, so it behaves identically on every platform.
+run_binary(
+    name = "people_json",
+    srcs = ["people.csv"],
+    args = [
+        "$(execpath people.csv)",
+        "$(execpath people.json)",
+    ],
+    outs = ["people.json"],
+    tool = ":csv_to_json",
+)

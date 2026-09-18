@@ -1,0 +1,10 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+package(default_visibility = ["//200_capstone_production:__subpackages__"])
+
+py_binary(
+    name = "report",
+    srcs = ["report.py"],
+    main = "report.py",
+    deps = ["//200_capstone_production/schema:telemetry_py_proto"],
+)

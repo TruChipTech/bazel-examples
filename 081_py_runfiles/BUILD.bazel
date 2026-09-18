@@ -1,0 +1,17 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
+
+py_binary(
+    name = "render",
+    srcs = ["render.py"],
+    data = ["assets/template.txt"],
+    main = "render.py",
+    deps = ["@rules_python//python/runfiles"],
+)
+
+py_test(
+    name = "render_test",
+    size = "small",
+    srcs = ["render_test.py"],
+    data = ["assets/template.txt"],
+    deps = ["@rules_python//python/runfiles"],
+)

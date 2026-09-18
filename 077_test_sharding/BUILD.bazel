@@ -1,0 +1,19 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "big_test",
+    size = "small",
+    srcs = ["big_test.py"],
+
+    # shard_count splits the test cases across N independent processes that
+    # run in PARALLEL, each with its own cache entry.
+    shard_count = 4,
+)
+
+# The same test without sharding, for comparison.
+py_test(
+    name = "big_test_unsharded",
+    size = "small",
+    srcs = ["big_test.py"],
+    main = "big_test.py",
+)

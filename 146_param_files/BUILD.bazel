@@ -1,0 +1,28 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":defs.bzl", "many_args")
+
+py_binary(
+    name = "count_args",
+    srcs = ["count_args.py"],
+    main = "count_args.py",
+    visibility = ["//visibility:public"],
+)
+
+# Few arguments, param file not required.
+many_args(
+    name = "small",
+    count = 5,
+)
+
+# Forced param file, to show the mechanism.
+many_args(
+    name = "small_forced",
+    always = True,
+    count = 5,
+)
+
+# Many arguments - this would exceed the OS limit without a param file.
+many_args(
+    name = "huge",
+    count = 20000,
+)

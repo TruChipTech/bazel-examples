@@ -1,0 +1,23 @@
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+
+# write_file: create a file from a list of lines. Replaces the very common
+# `genrule(cmd = "echo ... > $@")`, and it is portable (no shell involved).
+write_file(
+    name = "config",
+    out = "config.json",
+    content = [
+        "{",
+        '  "service": "demo",',
+        '  "replicas": 3',
+        "}",
+    ],
+)
+
+# copy_file: copy with a new name. Again, no shell, so it works identically on
+# Linux, macOS and Windows.
+copy_file(
+    name = "config_backup",
+    src = ":config.json",
+    out = "config.backup.json",
+)

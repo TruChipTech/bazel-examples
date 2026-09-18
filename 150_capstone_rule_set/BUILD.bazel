@@ -1,0 +1,4 @@
+test_suite(
+    name = "all_tests",
+    tests = ["//150_capstone_rule_set/project:dough_test"],
+)

@@ -1,0 +1,2 @@
+bazel scales to large repositories
+caches make builds fast

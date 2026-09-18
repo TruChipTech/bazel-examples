@@ -1,0 +1,5 @@
+genrule(
+    name = "note",
+    outs = ["note.txt"],
+    cmd = "echo 'see README.md - writing a cc_toolchain_config' > $@",
+)

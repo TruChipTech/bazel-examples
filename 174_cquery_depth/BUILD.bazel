@@ -1,0 +1,20 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+config_setting(
+    name = "linux",
+    constraint_values = ["@platforms//os:linux"],
+)
+
+cc_library(name = "epoll_backend", srcs = ["backend.cc"], hdrs = ["backend.h"])
+
+cc_library(name = "generic_backend", srcs = ["backend.cc"], hdrs = ["backend.h"])
+
+cc_binary(
+    name = "server",
+    srcs = ["server.cc"],
+    # query sees BOTH branches; cquery sees only the selected one.
+    deps = select({
+        ":linux": [":epoll_backend"],
+        "//conditions:default": [":generic_backend"],
+    }),
+)

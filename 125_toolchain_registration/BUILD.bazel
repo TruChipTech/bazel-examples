@@ -1,0 +1,35 @@
+load("//124_custom_toolchain:defs.bzl", "compiler_toolchain", "mini_compile")
+
+# These toolchains are REGISTERED in //MODULE.bazel, so they are candidates in
+# every build without anyone passing --extra_toolchains.
+compiler_toolchain(
+    name = "fast_impl",
+    compiler = "//124_custom_toolchain:fast",
+    flavor = "fast",
+)
+
+compiler_toolchain(
+    name = "reference_impl",
+    compiler = "//124_custom_toolchain:reference",
+    flavor = "reference",
+)
+
+# Registration ORDER decides the winner. //MODULE.bazel lists the fast one
+# first, so it wins whenever both are compatible.
+toolchain(
+    name = "fast_compiler_toolchain",
+    toolchain = ":fast_impl",
+    toolchain_type = "//124_custom_toolchain:compiler_type",
+)
+
+toolchain(
+    name = "reference_compiler_toolchain",
+    toolchain = ":reference_impl",
+    toolchain_type = "//124_custom_toolchain:compiler_type",
+)
+
+# No --extra_toolchains needed: this resolves using the registered toolchains.
+mini_compile(
+    name = "auto_compiled",
+    src = "//124_custom_toolchain:hello.mini",
+)

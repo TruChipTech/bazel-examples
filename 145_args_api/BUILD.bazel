@@ -1,0 +1,24 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":defs.bzl", "args_demo")
+
+py_binary(
+    name = "collect",
+    srcs = ["collect.py"],
+    main = "collect.py",
+    visibility = ["//visibility:public"],
+)
+
+args_demo(
+    name = "demo",
+    srcs = [
+        "one.txt",
+        "three.txt",
+        "two.txt",
+    ],
+    mode = "verbose",
+    tags_list = [
+        "alpha",
+        "alpha",
+        "beta",
+    ],
+)

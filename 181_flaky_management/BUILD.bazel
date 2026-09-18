@@ -1,0 +1,16 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "deterministic_test",
+    size = "small",
+    srcs = ["deterministic_test.py"],
+)
+
+# A genuinely nondeterministic test, to demonstrate detection. Tagged manual so
+# it cannot break `bazel test //...`.
+py_test(
+    name = "unreliable_test",
+    size = "small",
+    srcs = ["unreliable_test.py"],
+    tags = ["manual"],
+)

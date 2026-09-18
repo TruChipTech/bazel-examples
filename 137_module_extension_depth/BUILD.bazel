@@ -1,0 +1,6 @@
+genrule(
+    name = "show_registry",
+    srcs = ["@component_registry//:registry"],
+    outs = ["registry_copy.txt"],
+    cmd = "cp $(SRCS) $@",
+)

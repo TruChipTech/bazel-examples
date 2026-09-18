@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "use",
+    srcs = ["use.py"],
+    main = "use.py",
+    # Allowed: api is //visibility:public.
+    # Try adding //015_visibility/internal:secret here and the
+    # build fails - that is visibility doing its job.
+    deps = ["//015_visibility/public_api:api"],
+)

@@ -1,0 +1,8 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load(":defs.bzl", "demo_lines")
+
+write_file(
+    name = "helper_demo",
+    out = "helpers.txt",
+    content = demo_lines(),
+)

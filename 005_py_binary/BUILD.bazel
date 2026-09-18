@@ -1,0 +1,13 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# py_binary wraps a Python entry point into a runnable target. Bazel generates
+# a launcher script that sets PYTHONPATH so imports resolve exactly as declared.
+py_binary(
+    name = "wordcount",
+    srcs = ["wordcount.py"],
+
+    # `main` names the file holding the entry point. It may be omitted when a
+    # source file matches the target name, as it does here, but being explicit
+    # avoids surprises when srcs grows.
+    main = "wordcount.py",
+)

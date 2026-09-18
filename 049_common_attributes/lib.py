@@ -1,0 +1,1 @@
+VALUE = "common attributes demo"

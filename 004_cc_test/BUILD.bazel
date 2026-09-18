@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "calculator",
+    srcs = ["calculator.cc"],
+    hdrs = ["calculator.h"],
+)
+
+# cc_test is cc_binary plus test semantics:
+#   - `bazel test` runs it and caches the PASSED result
+#   - a zero exit code means pass, non-zero means fail
+#   - it gets a writable TEST_TMPDIR and other test environment variables
+cc_test(
+    name = "calculator_test",
+    srcs = ["calculator_test.cc"],
+    deps = [":calculator"],
+)

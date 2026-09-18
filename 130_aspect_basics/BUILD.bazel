@@ -1,0 +1,20 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(name = "leaf", srcs = ["leaf.py"], imports = ["."])
+
+py_library(
+    name = "middle",
+    srcs = [
+        "mid_a.py",
+        "mid_b.py",
+    ],
+    imports = ["."],
+    deps = [":leaf"],
+)
+
+py_library(
+    name = "root",
+    srcs = ["root.py"],
+    imports = ["."],
+    deps = [":middle"],
+)

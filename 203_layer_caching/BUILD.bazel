@@ -1,0 +1,24 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+# Order layers from LEAST to MOST frequently changing. Each layer's digest is
+# independent, so a change high in the stack leaves the lower layers - and
+# their cache entries, and their registry blobs - untouched.
+pkg_tar(name = "base_layer", srcs = ["base.txt"], package_dir = "/base")
+
+pkg_tar(name = "deps_layer", srcs = ["deps.txt"], package_dir = "/deps")
+
+pkg_tar(name = "app_layer", srcs = ["app.txt"], package_dir = "/app")
+
+oci_image(
+    name = "image",
+    entrypoint = "/app/app.txt",
+    layers = [
+        ":base_layer",  # changes rarely
+        ":deps_layer",  # changes sometimes
+        ":app_layer",   # changes every commit
+    ],
+    ref = "demo:layered",
+)

@@ -1,0 +1,37 @@
+load(":ordered.bzl", "ordered_node")
+
+# libc <- libm <- app   (app depends on libm depends on libc)
+ordered_node(
+    name = "libc",
+    order = "postorder",
+)
+
+ordered_node(
+    name = "libm",
+    order = "postorder",
+    deps = [":libc"],
+)
+
+ordered_node(
+    name = "app",
+    order = "postorder",
+    deps = [":libm"],
+)
+
+# The same graph in preorder.
+ordered_node(
+    name = "libc_pre",
+    order = "preorder",
+)
+
+ordered_node(
+    name = "libm_pre",
+    order = "preorder",
+    deps = [":libc_pre"],
+)
+
+ordered_node(
+    name = "app_pre",
+    order = "preorder",
+    deps = [":libm_pre"],
+)

@@ -1,0 +1,3 @@
+load(":stamp.bzl", "stamped_file")
+
+stamped_file(name = "build_info")

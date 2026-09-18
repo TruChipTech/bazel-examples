@@ -1,0 +1,36 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# Rather than defining your own config_settings for OS, reuse the ones the
+# @platforms module already publishes. Every rule set understands them.
+config_setting(
+    name = "linux",
+    constraint_values = ["@platforms//os:linux"],
+)
+
+config_setting(
+    name = "macos",
+    constraint_values = ["@platforms//os:macos"],
+)
+
+config_setting(
+    name = "windows",
+    constraint_values = ["@platforms//os:windows"],
+)
+
+# select() can drive ANY configurable attribute - not just copts.
+# Here it swaps both a compiler define and a data dependency.
+cc_binary(
+    name = "net",
+    srcs = ["net.cc"],
+    copts = select({
+        ":linux": [r'-DIO_BACKEND=\"epoll\"'],
+        ":macos": [r'-DIO_BACKEND=\"kqueue\"'],
+        ":windows": [r'-DIO_BACKEND=\"iocp\"'],
+        "//conditions:default": [r'-DIO_BACKEND=\"select\"'],
+    }),
+    data = select({
+        ":linux": ["epoll_backend.txt"],
+        ":macos": ["kqueue_backend.txt"],
+        "//conditions:default": ["generic_backend.txt"],
+    }),
+)

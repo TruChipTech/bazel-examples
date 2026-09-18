@@ -1,0 +1,23 @@
+load("@protobuf//bazel:cc_proto_library.bzl", "cc_proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@protobuf//bazel:py_proto_library.bzl", "py_proto_library")
+
+package(default_visibility = ["//098_multi_language:__subpackages__"])
+
+# ONE schema definition...
+proto_library(
+    name = "metric_proto",
+    srcs = ["metric.proto"],
+    strip_import_prefix = "/098_multi_language/proto",
+)
+
+# ...consumed by two languages.
+cc_proto_library(
+    name = "metric_cc_proto",
+    deps = [":metric_proto"],
+)
+
+py_proto_library(
+    name = "metric_py_proto",
+    deps = [":metric_proto"],
+)

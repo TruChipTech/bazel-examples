@@ -1,0 +1,8 @@
+# This sample uses the external dependency fetched in sample 066 to demonstrate
+# repository-level caching.
+genrule(
+    name = "external_probe",
+    srcs = ["@zlib_src//:all_files"],
+    outs = ["file_count.txt"],
+    cmd = "echo $(SRCS) | tr ' ' '\\n' | wc -l > $@",
+)

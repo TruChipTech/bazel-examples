@@ -1,0 +1,29 @@
+# filegroup gives a name to a set of files so that many targets can refer to
+# the set instead of repeating the file list.
+
+filegroup(
+    name = "web_assets",
+    srcs = [
+        "assets/index.html",
+        "assets/logo.svg",
+        "assets/style.css",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# filegroups compose: one can include another.
+filegroup(
+    name = "everything",
+    srcs = [
+        ":web_assets",
+        "README.md",
+    ],
+)
+
+# Consumers depend on the group, never on the individual files.
+genrule(
+    name = "asset_manifest",
+    srcs = [":web_assets"],
+    outs = ["manifest.txt"],
+    cmd = "for f in $(SRCS); do basename $$f; done | sort > $@",
+)

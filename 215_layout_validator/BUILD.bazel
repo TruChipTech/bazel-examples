@@ -1,0 +1,25 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "validate", srcs = ["validate.py"], main = "validate.py")
+
+# Validate images built by other examples - the validator is reusable.
+[
+    sh_test(
+        name = "validate_%s_test" % name,
+        size = "small",
+        srcs = ["run_validate.sh"],
+        args = [path],
+        data = [
+            ":validate",
+            target,
+        ],
+    )
+    for name, target, path in [
+        ("basic", "//201_oci_layout_basics:image", "201_oci_layout_basics/image_layout"),
+        ("layered", "//203_layer_caching:image", "203_layer_caching/image_layout"),
+        ("multiarch", "//205_multiarch_index:multiarch", "205_multiarch_index/multiarch_layout"),
+    ]
+]

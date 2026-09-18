@@ -1,0 +1,30 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "unit_test",
+    srcs = ["unit_test.py"],
+    tags = ["unit"],
+)
+
+py_test(
+    name = "integration_test",
+    srcs = ["integration_test.py"],
+    tags = [
+        "integration",
+        # Some tag values have SPECIAL MEANING to Bazel:
+        #   "manual"    - excluded from //... wildcards; must be named directly
+        #   "external"  - never cached; always re-run
+        #   "local"     - never sandboxed, never remote
+        #   "exclusive" - runs alone, no other test in parallel
+        #   "no-cache", "no-remote", "no-sandbox"
+        "requires-network",
+    ],
+)
+
+py_test(
+    name = "manual_test",
+    srcs = ["unit_test.py"],
+    main = "unit_test.py",
+    # `bazel test //...` will SKIP this. Only an explicit label runs it.
+    tags = ["manual"],
+)

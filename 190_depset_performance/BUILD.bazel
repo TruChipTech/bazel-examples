@@ -1,0 +1,24 @@
+load(":fast.bzl", "fast_node")
+load(":slow.bzl", "slow_node")
+
+# A chain 25 deep, built both ways. With the list version the deepest file is
+# copied 25 times; with the depset version it is never copied.
+DEPTH = 25
+
+[
+    slow_node(
+        name = "slow_%d" % i,
+        srcs = ["f.txt"],
+        deps = [] if i == 0 else [":slow_%d" % (i - 1)],
+    )
+    for i in range(DEPTH)
+]
+
+[
+    fast_node(
+        name = "fast_%d" % i,
+        srcs = ["f.txt"],
+        deps = [] if i == 0 else [":fast_%d" % (i - 1)],
+    )
+    for i in range(DEPTH)
+]

@@ -1,0 +1,35 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//200_capstone_production/rules:defs_test.bzl", "config_actions_test")
+
+# LEVEL 2: analysis test - are the right actions and providers produced?
+config_actions_test(
+    name = "config_actions_test",
+    target_under_test = "//200_capstone_production/server:capstone_config",
+)
+
+# LEVEL 3: end-to-end - do the two languages actually interoperate?
+sh_test(
+    name = "e2e_test",
+    size = "small",
+    srcs = ["e2e.sh"],
+    data = [
+        "//200_capstone_production/client:report",
+        "//200_capstone_production/server:collector",
+    ],
+    tags = ["integration"],
+)
+
+# POLICY: the dependency graph itself is asserted on.
+genquery(
+    name = "client_deps",
+    expression = "deps(//200_capstone_production/client:report)",
+    scope = ["//200_capstone_production/client:report"],
+)
+
+sh_test(
+    name = "policy_test",
+    size = "small",
+    srcs = ["check_policy.sh"],
+    data = [":client_deps"],
+    tags = ["policy"],
+)

@@ -1,0 +1,29 @@
+load(":settings.bzl", "backend_flag")
+
+# Declares the flag  --//059_string_flag:backend=<value>
+backend_flag(
+    name = "backend",
+    build_setting_default = "memory",
+    visibility = ["//visibility:public"],
+)
+
+# config_setting matches a custom setting through flag_values.
+config_setting(
+    name = "use_postgres",
+    flag_values = {":backend": "postgres"},
+)
+
+config_setting(
+    name = "use_redis",
+    flag_values = {":backend": "redis"},
+)
+
+genrule(
+    name = "backend_config",
+    outs = ["backend.conf"],
+    cmd = select({
+        ":use_postgres": "echo 'driver=postgres pool=20' > $@",
+        ":use_redis": "echo 'driver=redis ttl=300' > $@",
+        "//conditions:default": "echo 'driver=memory' > $@",
+    }),
+)

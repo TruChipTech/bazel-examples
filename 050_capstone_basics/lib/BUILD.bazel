@@ -1,0 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+package(default_visibility = ["//050_capstone_basics:__subpackages__"])
+
+cc_library(
+    name = "stats",
+    srcs = ["stats.cc"],
+    hdrs = ["stats.h"],
+    strip_include_prefix = ".",
+)
+
+cc_test(
+    name = "stats_test",
+    size = "small",
+    srcs = ["stats_test.cc"],
+    tags = ["unit"],
+    deps = [":stats"],
+)

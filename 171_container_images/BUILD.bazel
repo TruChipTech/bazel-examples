@@ -1,0 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+# A cc_binary keeps the layer small. A py_binary here would drag the whole
+# hermetic CPython interpreter into the image layer - see sample 085.
+cc_binary(
+    name = "app",
+    srcs = ["app.cc"],
+)
+
+# The layer an OCI image would be built from. Building the layers is the part
+# you can do with rules_pkg alone; rules_oci then assembles them into an image.
+pkg_tar(
+    name = "app_layer",
+    srcs = [":app"],
+    include_runfiles = True,
+    package_dir = "/app",
+)

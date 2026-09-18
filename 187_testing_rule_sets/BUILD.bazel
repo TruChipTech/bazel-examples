@@ -1,0 +1,32 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load(":defs.bzl", "csv_report")
+load(":defs_test.bzl", "action_test")
+
+csv_report(
+    name = "roster",
+    src = "data.csv",
+    expected_rows = 3,
+    title = "Team Roster",
+)
+
+# LEVEL 1 - does it analyze and build at all?
+build_test(
+    name = "builds_test",
+    size = "small",
+    targets = [":roster"],
+)
+
+# LEVEL 2 - does it register the right actions and providers?
+action_test(
+    name = "action_test",
+    target_under_test = ":roster",
+)
+
+# LEVEL 3 - is the OUTPUT correct?
+diff_test(
+    name = "golden_test",
+    size = "small",
+    file1 = "expected_report.txt",
+    file2 = ":roster",
+)

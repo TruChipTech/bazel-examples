@@ -1,0 +1,16 @@
+load(":defs.bzl", "matrix_test")
+
+# 3 backends x 2 modes = 6 test targets, all from one declaration.
+# (remote+sync is excluded because the test asserts it is unsupported.)
+matrix_test(
+    name = "storage_matrix",
+    src = "matrix_test.py",
+    backends = [
+        "memory",
+        "disk",
+    ],
+    modes = [
+        "sync",
+        "async",
+    ],
+)

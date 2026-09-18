@@ -1,0 +1,73 @@
+load(":defs.bzl", "arch_header", "codegen_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+toolchain_type(name = "codegen_type")
+
+codegen_toolchain(
+    name = "x86_64_impl",
+    arch_name = "x86_64",
+    word_size = 64,
+)
+
+codegen_toolchain(
+    name = "aarch64_impl",
+    arch_name = "aarch64",
+    word_size = 64,
+)
+
+codegen_toolchain(
+    name = "armv7_impl",
+    arch_name = "armv7",
+    word_size = 32,
+)
+
+# Each toolchain declares which TARGET platform it can produce output for.
+toolchain(
+    name = "x86_64_toolchain",
+    target_compatible_with = ["@platforms//cpu:x86_64"],
+    toolchain = ":x86_64_impl",
+    toolchain_type = ":codegen_type",
+)
+
+toolchain(
+    name = "aarch64_toolchain",
+    target_compatible_with = ["@platforms//cpu:aarch64"],
+    toolchain = ":aarch64_impl",
+    toolchain_type = ":codegen_type",
+)
+
+toolchain(
+    name = "armv7_toolchain",
+    target_compatible_with = ["@platforms//cpu:armv7"],
+    toolchain = ":armv7_impl",
+    toolchain_type = ":codegen_type",
+)
+
+platform(
+    name = "linux_x86_64",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+)
+
+platform(
+    name = "linux_aarch64",
+    constraint_values = [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:linux",
+    ],
+)
+
+platform(
+    name = "linux_armv7",
+    constraint_values = [
+        "@platforms//cpu:armv7",
+        "@platforms//os:linux",
+    ],
+)
+
+# ONE target. The toolchain - and therefore the output - depends entirely on
+# --platforms.
+arch_header(name = "arch")

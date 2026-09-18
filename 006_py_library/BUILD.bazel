@@ -1,0 +1,20 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+# py_library is not runnable. It packages modules so other targets can import
+# them, and it carries its own deps transitively to consumers.
+py_library(
+    name = "textlib",
+    srcs = ["textlib.py"],
+
+    # imports adds a directory to PYTHONPATH for consumers. "." means "treat
+    # this package directory as a root", which is why app.py can write
+    # `from textlib import ...` rather than a long dotted path.
+    imports = ["."],
+)
+
+py_binary(
+    name = "app",
+    srcs = ["app.py"],
+    main = "app.py",
+    deps = [":textlib"],
+)

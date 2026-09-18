@@ -1,0 +1,21 @@
+load(":defs.bzl", "describe", "flags_for", "make_service")
+
+SERVICES = [
+    make_service("auth", port = 9001),
+    make_service("billing", port = 9002, replicas = 3),
+]
+
+[
+    genrule(
+        name = "%s_manifest" % s.name,
+        outs = ["%s_manifest.txt" % s.name],
+        cmd = "echo '%s' > $@" % describe(s),
+    )
+    for s in SERVICES
+]
+
+genrule(
+    name = "linux_flags",
+    outs = ["linux_flags.txt"],
+    cmd = "echo '%s' > $@" % " ".join(flags_for("linux")),
+)

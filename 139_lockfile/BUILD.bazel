@@ -1,0 +1,5 @@
+genrule(
+    name = "note",
+    outs = ["note.txt"],
+    cmd = "echo 'see README.md - this sample is about MODULE.bazel.lock' > $@",
+)

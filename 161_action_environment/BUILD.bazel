@@ -1,0 +1,18 @@
+# These genrules show how the environment reaches (and does not reach) actions.
+# Note the $$ escaping: Bazel consumes one $ before the shell sees the command
+# (sample 010). Writing ${VAR} directly is a hard error.
+genrule(
+    name = "scrubbed",
+    outs = ["scrubbed.txt"],
+    # Bazel scrubs the client environment. Whatever you exported in your shell
+    # is NOT visible here unless you pass --action_env.
+    cmd = "echo \"DEMO_VAR is: $${DEMO_VAR:-<not set>}\" > $@",
+)
+
+genrule(
+    name = "locale_pinned",
+    outs = ["locale.txt"],
+    # A fixed value is safe to put in the action environment: it is identical
+    # on every machine, so it does not hurt the cache hit rate.
+    cmd = "echo \"LC_ALL is: $${LC_ALL:-<not set>}\" > $@",
+)

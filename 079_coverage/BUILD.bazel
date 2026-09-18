@@ -1,0 +1,14 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+
+py_library(
+    name = "shapes",
+    srcs = ["shapes.py"],
+    imports = ["."],
+)
+
+py_test(
+    name = "shapes_test",
+    size = "small",
+    srcs = ["shapes_test.py"],
+    deps = [":shapes"],
+)

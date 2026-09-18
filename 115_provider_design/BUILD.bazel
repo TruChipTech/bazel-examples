@@ -1,0 +1,25 @@
+load(":versioned.bzl", "requires_version", "versioned")
+
+versioned(
+    name = "libfoo",
+    major = 2,
+    minor = 4,
+    patch = 1,
+)
+
+versioned(
+    name = "libbar",
+    major = 1,
+    minor = 0,
+    qualifier = "rc1",
+)
+
+requires_version(
+    name = "check_foo",
+    dependency = ":libfoo",
+    min_major = 2,
+    min_minor = 0,
+)
+
+# Uncomment to see the init callback reject a bad value:
+# versioned(name = "invalid", major = 0, minor = 0, patch = 0)

@@ -1,0 +1,8 @@
+load(":greeting.bzl", "greeting")
+
+greeting(name = "default_greeting")
+
+greeting(
+    name = "bazel_greeting",
+    who = "Bazel",
+)

@@ -1,0 +1,5 @@
+user:id:int
+user:name:string
+user:email:string
+order:id:int
+order:total:float

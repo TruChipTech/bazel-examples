@@ -1,0 +1,26 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+pkg_tar(name = "layer", srcs = ["content.txt"], package_dir = "/app")
+
+oci_image(
+    name = "image",
+    entrypoint = "/app/content.txt",
+    layers = [":layer"],
+    ref = "demo:repro",
+)
+
+# The digest is pinned in a checked-in file. If anything makes the image
+# non-reproducible, this test fails and names the new digest.
+sh_test(
+    name = "digest_test",
+    size = "small",
+    srcs = ["check_digest.sh"],
+    data = [
+        "expected_digest.txt",
+        ":image",
+    ],
+)

@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+# A small layered graph to query against.
+py_library(name = "util", srcs = ["util.py"], imports = ["."])
+
+py_library(name = "storage", srcs = ["storage.py"], imports = ["."], deps = [":util"])
+
+py_library(name = "cache", srcs = ["cache.py"], imports = ["."], deps = [":storage"])
+
+py_library(name = "api", srcs = ["api.py"], imports = ["."], deps = [":cache", ":util"])
+
+py_binary(
+    name = "server",
+    srcs = ["server.py"],
+    imports = ["."],
+    main = "server.py",
+    deps = [":api"],
+)

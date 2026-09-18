@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+# Narrow, explicit glob: only this directory, only .py, and it must match.
+py_library(
+    name = "a",
+    srcs = glob(
+        ["*.py"],
+        allow_empty = False,
+    ),
+    imports = ["."],
+)

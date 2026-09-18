@@ -1,0 +1,15 @@
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@protobuf//bazel:py_proto_library.bzl", "py_proto_library")
+
+package(default_visibility = ["//100_capstone_composition:__subpackages__"])
+
+proto_library(
+    name = "task_proto",
+    srcs = ["task.proto"],
+    strip_import_prefix = "/100_capstone_composition/schema",
+)
+
+py_proto_library(
+    name = "task_py_proto",
+    deps = [":task_proto"],
+)

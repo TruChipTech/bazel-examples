@@ -1,0 +1,26 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+load(":index.bzl", "oci_index")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "mkindex", srcs = ["mkindex.py"], main = "mkindex.py")
+
+pkg_tar(name = "amd64_layer", srcs = ["amd64.txt"], package_dir = "/app")
+
+pkg_tar(name = "arm64_layer", srcs = ["arm64.txt"], package_dir = "/app")
+
+oci_image(name = "amd64_image", entrypoint = "/app/amd64.txt", layers = [":amd64_layer"], ref = "demo:amd64")
+
+oci_image(name = "arm64_image", entrypoint = "/app/arm64.txt", layers = [":arm64_layer"], ref = "demo:arm64")
+
+# ONE reference that resolves to the right image per platform.
+oci_index(
+    name = "multiarch",
+    images = {
+        "linux/amd64": ":amd64_image",
+        "linux/arm64": ":arm64_image",
+    },
+    ref = "demo:v1",
+)

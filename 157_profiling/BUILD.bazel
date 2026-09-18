@@ -1,0 +1,27 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+# Enough targets to make a profile interesting.
+[
+    cc_library(
+        name = "mod_%d" % i,
+        srcs = ["mod.cc"],
+        hdrs = ["mod.h"],
+        copts = ["-DMOD_ID=%d" % i],
+    )
+    for i in range(8)
+]
+
+cc_binary(
+    name = "app",
+    srcs = ["app.cc"],
+    deps = [":mod_%d" % i for i in range(8)],
+)
+
+# `bazel analyze-profile` was REMOVED in Bazel 9. This replaces it.
+py_binary(
+    name = "summarize_profile",
+    srcs = ["summarize_profile.py"],
+    main = "summarize_profile.py",
+    visibility = ["//visibility:public"],
+)

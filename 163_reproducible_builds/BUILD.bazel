@@ -1,0 +1,19 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# Deterministic: the output depends only on declared inputs.
+cc_binary(
+    name = "deterministic",
+    srcs = ["deterministic.cc"],
+)
+
+# Deliberately NON-deterministic, to show what the checks catch.
+# Tagged manual so it does not pollute a normal build.
+genrule(
+    name = "nondeterministic",
+    outs = ["nondeterministic.txt"],
+    cmd = "date +%s%N > $@",
+    tags = [
+        "manual",
+        "no-cache",
+    ],
+)

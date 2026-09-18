@@ -1,0 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load(":lint.bzl", "lint_report")
+
+py_binary(
+    name = "lint",
+    srcs = ["lint.py"],
+    main = "lint.py",
+    visibility = ["//visibility:public"],
+)
+
+py_library(name = "clean_module", srcs = ["clean_module.py"], imports = ["."])
+
+py_library(
+    name = "messy_module",
+    srcs = ["messy_module.py"],
+    imports = ["."],
+    deps = [":clean_module"],
+)
+
+lint_report(
+    name = "lint_all",
+    targets = [":messy_module"],
+)

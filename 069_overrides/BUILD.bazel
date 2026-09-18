@@ -1,0 +1,8 @@
+# The override itself lives in //MODULE.bazel. This target simply proves the
+# pinned module resolves.
+genrule(
+    name = "pinned_proof",
+    srcs = ["@licensing//:LICENSE"],
+    outs = ["pinned.txt"],
+    cmd = "echo 'rules_license is pinned to 1.0.0 by single_version_override' > $@ && wc -l < $(SRCS) >> $@",
+)

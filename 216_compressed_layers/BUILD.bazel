@@ -1,0 +1,31 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+package(default_visibility = ["//visibility:public"])
+
+pkg_tar(name = "layer_plain", srcs = ["data.txt"], package_dir = "/app")
+
+pkg_tar(
+    name = "layer_gz",
+    srcs = ["data.txt"],
+    extension = "tar.gz",
+    package_dir = "/app",
+)
+
+# The two identities of a compressed layer:
+#   digest  = sha256 of the COMPRESSED blob  (goes in the manifest)
+#   diff_id = sha256 of the UNCOMPRESSED tar (goes in the config rootfs)
+genrule(
+    name = "identities",
+    srcs = [
+        ":layer_gz",
+        ":layer_plain",
+    ],
+    outs = ["identities.txt"],
+    cmd = """
+      {
+        echo "uncompressed tar (diff_id): $$(sha256sum $(location :layer_plain) | cut -d' ' -f1)"
+        echo "compressed blob  (digest) : $$(sha256sum $(location :layer_gz) | cut -d' ' -f1)"
+        echo "gunzipped again  (diff_id): $$(gzip -dc $(location :layer_gz) | sha256sum | cut -d' ' -f1)"
+      } > $@
+    """,
+)

@@ -1,0 +1,9 @@
+# This is a COMPLETE, SEPARATE Bazel module that happens to live inside this
+# repository's directory tree. It has its own MODULE.bazel, its own name, and
+# its own dependencies.
+module(
+    name = "greeting_lib",
+    version = "1.0.0",
+)
+
+bazel_dep(name = "rules_python", version = "1.7.0")

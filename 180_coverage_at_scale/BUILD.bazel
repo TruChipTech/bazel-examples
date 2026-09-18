@@ -1,0 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+
+py_library(name = "core", srcs = ["core.py"], imports = ["."])
+
+py_library(name = "extras", srcs = ["extras.py"], imports = ["."], deps = [":core"])
+
+py_test(name = "core_test", size = "small", srcs = ["core_test.py"], deps = [":core"])
+
+py_test(name = "extras_test", size = "small", srcs = ["extras_test.py"], deps = [":extras"])

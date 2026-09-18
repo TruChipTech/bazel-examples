@@ -1,0 +1,27 @@
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# proto_library is LANGUAGE-NEUTRAL. It does not generate any code by itself -
+# it describes a set of .proto files and their dependency graph. Language
+# bindings come from cc_proto_library, java_proto_library, py_proto_library,
+# which each wrap this one target.
+#
+# strip_import_prefix rewrites the import path seen by protoc. A leading "/"
+# means "relative to the workspace root". Without it, every import would have
+# to spell out "074_proto_library/common.proto" - and, because this
+# directory name starts with a digit, the C++ include guard generated from
+# that path would be an invalid macro name (#ifndef 02_starter_...).
+proto_library(
+    name = "common_proto",
+    srcs = ["common.proto"],
+    strip_import_prefix = "/074_proto_library",
+)
+
+proto_library(
+    name = "event_proto",
+    srcs = ["event.proto"],
+    strip_import_prefix = "/074_proto_library",
+    # A proto that imports another must declare that dependency here.
+    deps = [":common_proto"],
+)

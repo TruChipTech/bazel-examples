@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":bundle.bzl", "bundle")
+
+bundle(
+    name = "assets",
+    srcs = [
+        "alpha.txt",
+        "beta.txt",
+    ],
+)
+
+# Because :assets is in `data`, its DefaultInfo.runfiles are staged here.
+py_binary(
+    name = "show",
+    srcs = ["show.py"],
+    data = [":assets"],
+    main = "show.py",
+)

@@ -1,0 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":service.bzl", "service_module")
+
+service_module(
+    name = "auth_service",
+    endpoints = [
+        "/login",
+        "/logout",
+        "/refresh",
+    ],
+    port = 9001,
+    service_name = "auth",
+    template = "service.py.tpl",
+)
+
+# NOTE: a file created with ctx.actions.declare_file is NOT addressable by its
+# own label (":auth_service.py" does not exist as a target). Depend on the RULE
+# target instead - its DefaultInfo.files supplies the generated source.
+py_binary(
+    name = "auth",
+    srcs = [":auth_service"],
+    main = "auth_service.py",
+)

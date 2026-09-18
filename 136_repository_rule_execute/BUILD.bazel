@@ -1,0 +1,10 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "use_generated",
+    srcs = ["use_generated.py"],
+    main = "use_generated.py",
+    # The whole @generated_lib repository - BUILD file included - was created
+    # by a repository rule at loading time.
+    deps = ["@generated_lib//:generated"],
+)

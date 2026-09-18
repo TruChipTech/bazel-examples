@@ -1,0 +1,34 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load(":defs.bzl", "release_vars")
+
+release_vars(
+    name = "vars",
+    channel = "beta",
+    vendor = "acme",
+    version = "4.2.0",
+)
+
+# Listing :vars in `toolchains` brings its variables into scope for THIS target.
+genrule(
+    name = "manifest",
+    outs = ["manifest.txt"],
+    cmd = """
+      {
+        echo "version: $(RELEASE_VERSION)"
+        echo "channel: $(RELEASE_CHANNEL)"
+        echo "vendor:  $(VENDOR_NAME)"
+      } > $@
+    """,
+    toolchains = [":vars"],
+)
+
+cc_binary(
+    name = "version",
+    srcs = ["version.cc"],
+    copts = [
+        r'-DVERSION=\"$(RELEASE_VERSION)\"',
+        r'-DCHANNEL=\"$(RELEASE_CHANNEL)\"',
+        r'-DVENDOR=\"$(VENDOR_NAME)\"',
+    ],
+    toolchains = [":vars"],
+)

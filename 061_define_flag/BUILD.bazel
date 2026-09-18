@@ -1,0 +1,37 @@
+# --define is the ORIGINAL, pre-Starlark way to pass a value into a build.
+# It still works and you will meet it in older repos, but new code should
+# prefer custom build settings (sample 059).
+
+config_setting(
+    name = "prod",
+    define_values = {"env": "prod"},
+)
+
+config_setting(
+    name = "staging",
+    define_values = {"env": "staging"},
+)
+
+genrule(
+    name = "env_config",
+    outs = ["env.conf"],
+    cmd = select({
+        ":prod": "echo 'endpoint=https://api.example.com' > $@",
+        ":staging": "echo 'endpoint=https://staging.example.com' > $@",
+        "//conditions:default": "echo 'endpoint=http://localhost:8080' > $@",
+    }),
+)
+
+# A --define value can also be read directly as a Make variable in cmd,
+# copts, and similar attributes. Undefined -> expansion error, so this is
+# usually paired with a config_setting instead.
+# This target FAILS unless --define=VERSION=... is passed, because there is no
+# default for a raw Make-variable expansion. It is tagged "manual" so that
+# `bazel build //...` skips it rather than breaking the whole repo build -
+# which is itself a good illustration of why raw $(VAR) reads are fragile.
+genrule(
+    name = "raw_define",
+    outs = ["raw.txt"],
+    cmd = "echo 'version=$(VERSION)' > $@",
+    tags = ["manual"],
+)

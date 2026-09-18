@@ -1,0 +1,23 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "feature",
+    srcs = ["feature.cc"],
+
+    # copts: flags passed to the compiler for THIS target only. They do not
+    # propagate to dependencies or to consumers.
+    copts = [
+        "-Wall",
+        "-Wextra",
+        "-DENABLE_FANCY",
+        "-DMAX_ITEMS=64",
+        # Quotes need escaping twice: once for Starlark, once for the shell.
+        r'-DVERSION_STRING=\"1.4.2\"',
+    ],
+)
+
+cc_binary(
+    name = "plain",
+    srcs = ["feature.cc"],
+    copts = [r'-DVERSION_STRING=\"0.0.0-plain\"'],
+)

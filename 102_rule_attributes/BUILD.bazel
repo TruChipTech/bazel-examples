@@ -1,0 +1,27 @@
+load(":report.bzl", "report")
+
+report(
+    name = "full_report",
+    categories = [
+        "infra",
+        "platform",
+    ],
+    data = [
+        "a.txt",
+        "b.txt",
+    ],
+    header = "head.txt",
+    max_items = 25,
+    owners = {
+        "infra": "alice",
+        "platform": "bob",
+    },
+    title = "Quarterly Summary",
+    verbose = True,
+)
+
+# Only the mandatory attribute is supplied; everything else takes its default.
+report(
+    name = "minimal_report",
+    title = "Minimal",
+)

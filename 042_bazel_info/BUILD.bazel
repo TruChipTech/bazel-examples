@@ -1,0 +1,5 @@
+genrule(
+    name = "marker",
+    outs = ["marker.txt"],
+    cmd = "echo 'run bazel info to see where this landed' > $@",
+)

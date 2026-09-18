@@ -1,0 +1,14 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# The test that proves the two languages interoperate. It depends on both
+# binaries, so changing the .proto rebuilds both and re-runs this test.
+sh_test(
+    name = "roundtrip_test",
+    size = "small",
+    srcs = ["roundtrip.sh"],
+    data = [
+        "//098_multi_language/cc:writer",
+        "//098_multi_language/py:reader",
+    ],
+    tags = ["integration"],
+)

@@ -1,0 +1,38 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+# NOTE: this is deliberately a cc_binary. Packaging a py_binary with
+# include_runfiles would also bundle rules_python's hermetic CPython
+# interpreter - about 248 MB for a hello-world service. See the README.
+cc_binary(
+    name = "service",
+    srcs = ["bin/service.cc"],
+)
+
+# The simplest form: take some files, produce a tarball.
+pkg_tar(
+    name = "config_tar",
+    srcs = glob(["config/*.yaml"]),
+    # Strip the leading directory so paths inside the archive are clean.
+    strip_prefix = "config",
+    # Place everything under this directory in the archive.
+    package_dir = "/etc/demo",
+)
+
+# include_runfiles packages the binary together with everything it needs.
+pkg_tar(
+    name = "service_tar",
+    srcs = [":service"],
+    include_runfiles = True,
+    package_dir = "/opt/demo",
+)
+
+# Tarballs compose: deps merges other pkg_tar targets.
+pkg_tar(
+    name = "release_tar",
+    extension = "tar.gz",
+    deps = [
+        ":config_tar",
+        ":service_tar",
+    ],
+)

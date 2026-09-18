@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "threaded",
+    srcs = ["threaded.cc"],
+
+    # linkopts are flags for the LINK step, not the compile step. Use them for
+    # system libraries that Bazel does not model as targets.
+    #
+    # Unlike copts, linkopts DO propagate: a cc_library's linkopts are applied
+    # when linking any binary that depends on it. That is necessary - the
+    # binary is what actually needs the library on its link line.
+    linkopts = [
+        "-lpthread",
+        "-lm",
+    ],
+)

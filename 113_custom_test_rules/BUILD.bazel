@@ -1,0 +1,24 @@
+load(":schema_test.bzl", "schema_test")
+
+schema_test(
+    name = "configs_have_names",
+    size = "small",
+    srcs = [
+        "svc_a.yaml",
+        "svc_b.yaml",
+    ],
+    required_key = "name",
+)
+
+# This one fails, because the files have no "owner:" key. Tagged manual so
+# `bazel test //...` stays green; run it explicitly to see the failure.
+schema_test(
+    name = "configs_have_owners",
+    size = "small",
+    srcs = [
+        "svc_a.yaml",
+        "svc_b.yaml",
+    ],
+    required_key = "owner",
+    tags = ["manual"],
+)

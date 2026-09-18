@@ -1,0 +1,8 @@
+# A single label CI can use for this whole sample.
+test_suite(
+    name = "all_tests",
+    tests = [
+        "//050_capstone_basics/cli:smoke_test",
+        "//050_capstone_basics/lib:stats_test",
+    ],
+)

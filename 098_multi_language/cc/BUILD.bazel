@@ -1,0 +1,8 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "writer",
+    srcs = ["writer.cc"],
+    visibility = ["//098_multi_language:__subpackages__"],
+    deps = ["//098_multi_language/proto:metric_cc_proto"],
+)

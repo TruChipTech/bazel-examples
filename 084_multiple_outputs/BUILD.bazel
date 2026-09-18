@@ -1,0 +1,35 @@
+# A single action can declare SEVERAL outputs. Bazel tracks them all, and any
+# consumer depending on one of them causes the whole action to run once.
+
+genrule(
+    name = "split_schema",
+    srcs = ["schema.txt"],
+    outs = [
+        "user_schema.txt",
+        "order_schema.txt",
+        "summary.txt",
+    ],
+    cmd = """
+      grep '^user:'  $< > $(location user_schema.txt)
+      grep '^order:' $< > $(location order_schema.txt)
+      {
+        echo "tables: 2"
+        echo "user fields:  $$(grep -c '^user:'  $<)"
+        echo "order fields: $$(grep -c '^order:' $<)"
+      } > $(location summary.txt)
+    """,
+)
+
+# Consumers can depend on ONE specific output...
+genrule(
+    name = "user_only",
+    srcs = ["user_schema.txt"],
+    outs = ["user_copy.txt"],
+    cmd = "cp $< $@",
+)
+
+# ...or on the rule, which yields all of its outputs.
+filegroup(
+    name = "all_schemas",
+    srcs = [":split_schema"],
+)

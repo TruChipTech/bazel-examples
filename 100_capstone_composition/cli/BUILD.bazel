@@ -1,0 +1,10 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "tasks",
+    srcs = ["main.py"],
+    imports = ["."],
+    main = "main.py",
+    visibility = ["//100_capstone_composition:__subpackages__"],
+    deps = ["//100_capstone_composition/engine:store"],
+)

@@ -1,0 +1,29 @@
+load(":collect.bzl", "collect_node")
+
+# A diamond: top depends on left and right, both of which depend on bottom.
+# bottom's files appear ONCE in top, not twice - depsets deduplicate.
+collect_node(
+    name = "bottom",
+    srcs = ["a.txt"],
+)
+
+collect_node(
+    name = "left",
+    srcs = ["b.txt"],
+    deps = [":bottom"],
+)
+
+collect_node(
+    name = "right",
+    srcs = ["c.txt"],
+    deps = [":bottom"],
+)
+
+collect_node(
+    name = "top",
+    srcs = ["d.txt"],
+    deps = [
+        ":left",
+        ":right",
+    ],
+)

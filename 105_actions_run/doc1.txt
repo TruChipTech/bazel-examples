@@ -1,0 +1,2 @@
+bazel builds software quickly
+bazel caches results

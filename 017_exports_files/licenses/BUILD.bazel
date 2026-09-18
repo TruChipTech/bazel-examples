@@ -1,0 +1,9 @@
+# A plain FILE in a package is not automatically visible to other packages.
+# exports_files() makes specific files referencable from elsewhere.
+exports_files(
+    [
+        "LICENSE.txt",
+        "NOTICE.txt",
+    ],
+    visibility = ["//visibility:public"],
+)

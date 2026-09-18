@@ -1,0 +1,36 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# The generator is itself a Bazel target, so its own dependencies are tracked
+# and it is rebuilt when its source changes.
+py_binary(
+    name = "codegen",
+    srcs = ["codegen.py"],
+    main = "codegen.py",
+)
+
+genrule(
+    name = "gen_constants",
+    srcs = ["names.txt"],
+    outs = ["generated_constants.h"],
+    cmd = "$(execpath :codegen) $(execpath names.txt) $@",
+    # tools (not srcs!) - executables built for the execution platform.
+    tools = [":codegen"],
+)
+
+# Wrapping the generated header in a cc_library is the standard idiom. The
+# header lands in bazel-bin, not the source tree, so `includes = ["."]` adds
+# BOTH this package's source dir and its bazel-bin counterpart to the include
+# path - which is what lets use_generated.cc write #include "generated_constants.h".
+cc_library(
+    name = "constants",
+    hdrs = [":generated_constants.h"],
+    includes = ["."],
+)
+
+cc_binary(
+    name = "use_generated",
+    srcs = ["use_generated.cc"],
+    # A generated header is consumed exactly like a checked-in one.
+    deps = [":constants"],
+)

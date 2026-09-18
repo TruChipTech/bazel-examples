@@ -1,0 +1,4 @@
+# Bazel creates these convenience symlinks in the workspace root.
+/bazel-*
+# Local, machine-specific overrides (see .bazelrc try-import).
+/user.bazelrc

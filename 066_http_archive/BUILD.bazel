@@ -1,0 +1,11 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+exports_files(["zlib.BUILD"])
+
+# @zlib_src is an ordinary external repository now. Nothing about depending on
+# it differs from depending on a Bazel-native module.
+cc_binary(
+    name = "compress",
+    srcs = ["compress.cc"],
+    deps = ["@zlib_src//:zlib"],
+)

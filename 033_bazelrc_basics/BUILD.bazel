@@ -1,0 +1,5 @@
+genrule(
+    name = "show_rc",
+    outs = ["rc_note.txt"],
+    cmd = "echo 'Built with the flags from //.bazelrc' > $@",
+)

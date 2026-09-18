@@ -1,0 +1,13 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(name = "cached_test", size = "small", srcs = ["cached_test.py"])
+
+py_test(
+    name = "never_cached_test",
+    size = "small",
+    srcs = ["cached_test.py"],
+    main = "cached_test.py",
+    # The "external" tag means "this test depends on something Bazel cannot
+    # see", so its result is never cached and it re-runs every time.
+    tags = ["external"],
+)

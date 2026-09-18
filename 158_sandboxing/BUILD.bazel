@@ -1,0 +1,10 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# Only declared.txt is in data. undeclared.txt sits right next to it on disk
+# but must be invisible to the test.
+sh_test(
+    name = "sandbox_test",
+    size = "small",
+    srcs = ["leaky.sh"],
+    data = ["declared.txt"],
+)

@@ -1,0 +1,8 @@
+# @build_metadata_repo did not exist on disk anywhere - the module extension
+# created it during MODULE.bazel evaluation.
+genrule(
+    name = "show_metadata",
+    srcs = ["@build_metadata_repo//:metadata"],
+    outs = ["metadata_copy.txt"],
+    cmd = "cat $(SRCS) > $@",
+)

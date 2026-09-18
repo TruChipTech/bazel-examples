@@ -1,0 +1,7 @@
+load("//124_custom_toolchain:defs.bzl", "mini_compile")
+
+# A plain consumer, used as a subject for the debugging commands in README.md.
+mini_compile(
+    name = "subject",
+    src = "//124_custom_toolchain:hello.mini",
+)

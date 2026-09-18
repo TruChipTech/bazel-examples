@@ -1,0 +1,22 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+load(":defs.bzl", "tuned_binary")
+
+string_flag(
+    name = "opt_level",
+    build_setting_default = "2",
+    values = [
+        "0",
+        "1",
+        "2",
+        "3",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "tracing",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
+tuned_binary(name = "service")

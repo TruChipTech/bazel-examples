@@ -1,0 +1,15 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+# Nearly every rule accepts these attributes regardless of language.
+py_library(
+    name = "lib",  # required, unique within the package
+    srcs = ["lib.py"],  # build-time sources
+    data = ["data.txt"],  # run-time files (runfiles)
+    tags = [  # metadata + special behaviors
+        "team-platform",
+        "no-cache",
+    ],
+    testonly = False,  # may non-test targets depend on this?
+    visibility = ["//visibility:public"],  # who may depend on this
+    deps = [],  # other targets needed at build time
+)

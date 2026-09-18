@@ -1,0 +1,34 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# config_setting names a CONDITION that select() can test.
+# These match against Bazel's built-in platform constraints.
+config_setting(
+    name = "on_linux",
+    constraint_values = ["@platforms//os:linux"],
+)
+
+config_setting(
+    name = "on_macos",
+    constraint_values = ["@platforms//os:macos"],
+)
+
+config_setting(
+    name = "on_windows",
+    constraint_values = ["@platforms//os:windows"],
+)
+
+cc_binary(
+    name = "platform_info",
+    srcs = ["platform_info.cc"],
+
+    # select() makes an attribute CONFIGURATION-DEPENDENT. Exactly one branch
+    # is chosen during analysis, based on the current configuration.
+    copts = select({
+        ":on_linux": [r'-DPLATFORM_NAME=\"linux\"'],
+        ":on_macos": [r'-DPLATFORM_NAME=\"macos\"'],
+        ":on_windows": [r'-DPLATFORM_NAME=\"windows\"'],
+        # //conditions:default is used when nothing else matches. Without it,
+        # an unmatched configuration is a build ERROR.
+        "//conditions:default": [r'-DPLATFORM_NAME=\"unknown\"'],
+    }),
+)

@@ -1,0 +1,18 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load(":defs.bzl", "channel_probe", "multi_bundle")
+
+string_flag(
+    name = "channel",
+    build_setting_default = "dev",
+    visibility = ["//visibility:public"],
+)
+
+channel_probe(name = "probe")
+
+# ONE dependency, built four times: three channels via the split transition,
+# plus once in dbg via the 1:1 transition.
+multi_bundle(
+    name = "bundle",
+    debug_variant = ":probe",
+    variants = [":probe"],
+)

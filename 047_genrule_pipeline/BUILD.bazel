@@ -1,0 +1,31 @@
+# Build steps chain by making one rule's OUTPUT another rule's INPUT.
+# Bazel infers the ordering from the graph - you never specify it.
+
+# Step 1: drop the header row.
+genrule(
+    name = "strip_header",
+    srcs = ["raw.csv"],
+    outs = ["body.csv"],
+    cmd = "tail -n +2 $< > $@",
+)
+
+# Step 2: sort by name.
+genrule(
+    name = "sorted",
+    srcs = [":body.csv"],  # <- output of step 1
+    outs = ["sorted.csv"],
+    cmd = "sort $< > $@",
+)
+
+# Step 3: keep only the engineering rows and count them.
+genrule(
+    name = "eng_report",
+    srcs = [":sorted.csv"],  # <- output of step 2
+    outs = ["eng_report.txt"],
+    cmd = """
+      grep ',eng,' $< > $@.tmp
+      echo "engineering headcount: $$(wc -l < $@.tmp)" >  $@
+      cat $@.tmp                                       >> $@
+      rm  $@.tmp
+    """,
+)

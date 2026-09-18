@@ -1,0 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "use",
+    srcs = ["use.py"],
+    main = "use.py",
+    # Allowed: this package is a member of :internal_users.
+    deps = ["//046_package_groups/core:engine"],
+)

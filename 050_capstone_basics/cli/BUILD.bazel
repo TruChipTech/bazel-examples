@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+cc_binary(
+    name = "analyze",
+    srcs = ["main.cc"],
+    visibility = ["//050_capstone_basics:__subpackages__"],
+    deps = ["//050_capstone_basics/lib:stats"],
+)
+
+# An end-to-end test: runs the real binary against real data.
+sh_test(
+    name = "smoke_test",
+    size = "small",
+    srcs = ["run_smoke.sh"],
+    data = [
+        ":analyze",
+        "//050_capstone_basics/testdata:values",
+    ],
+    tags = ["integration"],
+)

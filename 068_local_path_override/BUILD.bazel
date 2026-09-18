@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# @greeting_lib resolves to the directory on disk because MODULE.bazel says:
+#     local_path_override(module_name = "greeting_lib", path = "...")
+# Nothing about this dependency edge looks different from a registry module.
+py_binary(
+    name = "main",
+    srcs = ["main.py"],
+    main = "main.py",
+    deps = ["@greeting_lib//greeting:polite"],
+)

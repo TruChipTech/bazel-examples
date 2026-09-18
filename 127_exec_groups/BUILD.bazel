@@ -1,0 +1,6 @@
+load(":build_steps.bzl", "multi_step")
+
+multi_step(
+    name = "artifact",
+    src = "source.txt",
+)

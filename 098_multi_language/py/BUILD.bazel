@@ -1,0 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "reader",
+    srcs = ["reader.py"],
+    main = "reader.py",
+    visibility = ["//098_multi_language:__subpackages__"],
+    deps = ["//098_multi_language/proto:metric_py_proto"],
+)

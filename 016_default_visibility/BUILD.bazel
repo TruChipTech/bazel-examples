@@ -1,0 +1,22 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+# Set once at the top of the file and every target below inherits it.
+# This avoids repeating `visibility = [...]` on 40 targets.
+package(default_visibility = ["//visibility:public"])
+
+py_library(
+    name = "a",
+    srcs = ["a.py"],
+)
+
+py_library(
+    name = "b",
+    srcs = ["b.py"],
+)
+
+# An individual target can still opt out of the package default.
+py_library(
+    name = "c_internal",
+    srcs = ["c.py"],
+    visibility = ["//visibility:private"],
+)

@@ -1,0 +1,169 @@
+# Root package.
+#
+# The examples live in a flat tree (001_ upward), so there is no grouping
+# directory to point `bazel test` at. These suites restore that:
+#
+#   bazel test //:foundations  examples 001-050  - targets, deps, tests, visibility
+#   bazel test //:composition  examples 051-100  - macros, select(), external deps
+#   bazel test //:authoring    examples 101-150  - writing rules, aspects, toolchains
+#   bazel test //:operations   examples 151-200  - caching, hermeticity, CI
+#   bazel test //:images       examples 201-250  - OCI images from first principles
+#   bazel test //:signing      examples 251-300  - signatures, attestation, supply chain
+#   bazel test //:firmware     examples 301-350  - bare metal, flash images, secure boot
+#   bazel test //:parallel     examples 401-450  - fan-out and multi-arch matrices
+#   bazel test //:all_tests   everything
+#
+# Plain wildcards still work: bazel build //...  /  bazel test //...
+#
+# NOTE: tests tagged "manual" are excluded - some examples ship a test that
+# is MEANT to fail, to show what the failure looks like.
+
+test_suite(
+    name = "foundations",
+    tests = [
+        "//004_cc_test:calculator_test",
+        "//007_py_test:validators_test",
+        "//009_sh_test:check_format",
+        "//014_glob_excludes:core_test",
+        "//018_multiple_targets:storage_test",
+        "//026_test_size_timeout:quick_test",
+        "//026_test_size_timeout:slow_but_cheap_test",
+        "//026_test_size_timeout:slow_test",
+        "//027_test_tags:integration_test",
+        "//027_test_tags:unit_test",
+        "//028_test_suite:a_test",
+        "//028_test_suite:b_test",
+        "//028_test_suite:c_test",
+        "//029_args_and_env:env_test",
+        "//032_build_run_test:tool_test",
+        "//041_testonly:clock_test",
+        "//050_capstone_basics/cli:smoke_test",
+        "//050_capstone_basics/lib:stats_test",
+    ],
+)
+
+test_suite(
+    name = "composition",
+    tests = [
+        "//051_legacy_macros:greeter_test",
+        "//073_java_test:calculator_test",
+        "//077_test_sharding:big_test",
+        "//077_test_sharding:big_test_unsharded",
+        "//078_flaky_tests:quarantined_test",
+        "//078_flaky_tests:stable_test",
+        "//079_coverage:shapes_test",
+        "//081_py_runfiles:render_test",
+        "//087_diff_test:report_matches_golden",
+        "//088_build_test:everything_builds",
+        "//096_native_in_macros:double_test",
+        "//096_native_in_macros:triple_test",
+        "//097_test_matrix:storage_matrix_disk_async",
+        "//097_test_matrix:storage_matrix_disk_sync",
+        "//097_test_matrix:storage_matrix_memory_async",
+        "//097_test_matrix:storage_matrix_memory_sync",
+        "//098_multi_language/e2e:roundtrip_test",
+        "//099_release_pipeline:release_test",
+        "//100_capstone_composition/tests:store_test",
+    ],
+)
+
+test_suite(
+    name = "authoring",
+    tests = [
+        "//113_custom_test_rules:configs_have_names",
+        "//128_target_compatible_with:linux_only_test",
+        "//128_target_compatible_with:portable_test",
+        "//128_target_compatible_with:windows_only_test",
+        "//150_capstone_rule_set/project:dough_test",
+    ],
+)
+
+test_suite(
+    name = "operations",
+    tests = [
+        "//156_build_event_protocol:passing_test",
+        "//158_sandboxing:sandbox_test",
+        "//177_dependency_policy:policy_test",
+        "//178_test_caching:cached_test",
+        "//178_test_caching:never_cached_test",
+        "//179_ci_sharding:integration_test",
+        "//179_ci_sharding:slow_test",
+        "//179_ci_sharding:unit_a_test",
+        "//179_ci_sharding:unit_b_test",
+        "//180_coverage_at_scale:core_test",
+        "//180_coverage_at_scale:extras_test",
+        "//181_flaky_management:deterministic_test",
+        "//185_starlark_unit_tests:lib_tests_test_0",
+        "//185_starlark_unit_tests:lib_tests_test_1",
+        "//185_starlark_unit_tests:lib_tests_test_2",
+        "//185_starlark_unit_tests:lib_tests_test_3",
+        "//186_analysis_tests:failure_test",
+        "//186_analysis_tests:outputs_test",
+        "//186_analysis_tests:provider_test",
+        "//187_testing_rule_sets:action_test",
+        "//187_testing_rule_sets:builds_test",
+        "//187_testing_rule_sets:golden_test",
+        "//194_macro_finalizers:alpha_test",
+        "//194_macro_finalizers:coverage_guard",
+        "//197_rule_composition:api_test",
+        "//198_wrapping_rules:widget_test",
+        "//200_capstone_production/tests:config_actions_test",
+        "//200_capstone_production/tests:e2e_test",
+        "//200_capstone_production/tests:policy_test",
+        "//200_capstone_production:release_test",
+    ],
+)
+
+test_suite(
+    name = "images",
+    tests = [
+        "//207_reproducible_digest:digest_test",
+        "//210_image_size_budget:size_budget_test",
+        "//211_image_policy:policy_test",
+        "//215_layout_validator:validate_basic_test",
+        "//215_layout_validator:validate_layered_test",
+        "//215_layout_validator:validate_multiarch_test",
+        "//219_digest_pinning:pin_policy_test",
+    ],
+)
+
+test_suite(
+    name = "signing",
+    tests = [
+        "//251_signing_basics:ec_verify_test",
+        "//251_signing_basics:rsa_verify_test",
+        "//271_sign_oci_image:server_signature_test",
+    ],
+)
+
+test_suite(
+    name = "firmware",
+    tests = [
+        "//331_signed_firmware:boot_test",
+    ],
+)
+
+test_suite(
+    name = "parallel",
+    tests = [
+        "//401_parallel_signed_images:auth_signature_test",
+        "//401_parallel_signed_images:billing_signature_test",
+        "//401_parallel_signed_images:gateway_signature_test",
+        "//401_parallel_signed_images:notifier_signature_test",
+        "//401_parallel_signed_images:search_signature_test",
+    ],
+)
+
+test_suite(
+    name = "all_tests",
+    tests = [
+        ":authoring",
+        ":composition",
+        ":firmware",
+        ":foundations",
+        ":images",
+        ":operations",
+        ":parallel",
+        ":signing",
+    ],
+)

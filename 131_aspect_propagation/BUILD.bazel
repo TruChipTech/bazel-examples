@@ -1,0 +1,17 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+py_library(name = "util", srcs = ["util.py"], imports = ["."])
+
+py_library(name = "core", srcs = ["core.py"], imports = ["."], deps = [":util"])
+
+filegroup(name = "assets", srcs = ["asset.txt"])
+
+py_binary(
+    name = "app",
+    srcs = ["app.py"],
+    # The aspect follows BOTH deps and data, so :assets is visited too.
+    data = [":assets"],
+    imports = ["."],
+    main = "app.py",
+    deps = [":core"],
+)

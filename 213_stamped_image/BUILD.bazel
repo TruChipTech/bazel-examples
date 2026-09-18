@@ -1,0 +1,14 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+load(":stamp.bzl", "stamped_image")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "stamp_index", srcs = ["stamp_index.py"], main = "stamp_index.py")
+
+pkg_tar(name = "layer", srcs = ["app.txt"], package_dir = "/app")
+
+oci_image(name = "image", entrypoint = "/app/app.txt", layers = [":layer"], ref = "demo:stamped")
+
+stamped_image(name = "released", image = ":image")

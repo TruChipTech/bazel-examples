@@ -1,0 +1,41 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_python//python:defs.bzl", "py_library")
+
+package(default_visibility = ["//100_capstone_composition:__subpackages__"])
+
+# A user-settable flag choosing the storage backend.
+string_flag(
+    name = "backend",
+    build_setting_default = "memory",
+    values = [
+        "disk",
+        "memory",
+    ],
+)
+
+config_setting(
+    name = "use_disk",
+    flag_values = {":backend": "disk"},
+)
+
+# The flag's value is baked into a generated Python module.
+expand_template(
+    name = "backend_config",
+    out = "backend_config.py",
+    substitutions = select({
+        ":use_disk": {"{BACKEND}": "disk"},
+        "//conditions:default": {"{BACKEND}": "memory"},
+    }),
+    template = "backend_config.py.tpl",
+)
+
+py_library(
+    name = "store",
+    srcs = [
+        "store.py",
+        ":backend_config.py",
+    ],
+    imports = ["."],
+    deps = ["//100_capstone_composition/schema:task_py_proto"],
+)

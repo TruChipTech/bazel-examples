@@ -1,0 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//150_capstone_rule_set/rules:toolchain.bzl", "recipe_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+toolchain_type(name = "recipe_toolchain_type")
+
+py_binary(name = "compile", srcs = ["compile.py"], main = "compile.py")
+
+py_binary(name = "lint", srcs = ["lint.py"], main = "lint.py")
+
+recipe_toolchain(
+    name = "standard_impl",
+    compiler = ":compile",
+    flavor = "standard",
+    linter = ":lint",
+)
+
+toolchain(
+    name = "standard_toolchain",
+    toolchain = ":standard_impl",
+    toolchain_type = ":recipe_toolchain_type",
+)

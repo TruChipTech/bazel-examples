@@ -1,0 +1,14 @@
+load(":validate.bzl", "checked_config")
+
+checked_config(
+    name = "clean",
+    src = "clean.yaml",
+)
+
+# This target's VALIDATION fails, even though its real output is fine.
+# Tagged manual so `bazel build //...` stays green - run it explicitly.
+checked_config(
+    name = "leaky",
+    src = "leaky.yaml",
+    tags = ["manual"],
+)

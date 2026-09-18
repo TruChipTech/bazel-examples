@@ -1,0 +1,10 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+sh_test(
+    name = "check_format",
+    srcs = ["check_format.sh"],
+
+    # data files are staged into the test's runfiles tree. Without this line
+    # the test cannot see config.ini even though it sits in the same directory.
+    data = ["config.ini"],
+)

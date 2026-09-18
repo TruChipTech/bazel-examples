@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package samples.common;
+
+// Shared types, imported by other .proto files.
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+enum Severity {
+  SEVERITY_UNKNOWN = 0;
+  SEVERITY_INFO = 1;
+  SEVERITY_WARNING = 2;
+  SEVERITY_ERROR = 3;
+}

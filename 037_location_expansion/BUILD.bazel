@@ -1,0 +1,35 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "transform",
+    srcs = ["transform.sh"],
+)
+
+genrule(
+    name = "shout",
+    srcs = ["input.txt"],
+    outs = ["shouted.txt"],
+
+    # $(location ...) expands a LABEL into the PATH of the file it produces.
+    # Never hard-code a path like "bazel-bin/..." - it changes with the
+    # configuration and breaks on remote execution.
+    cmd = "$(location :transform) $(location input.txt) $@",
+
+    # tools are executable inputs. They are built for the EXECUTION platform
+    # (the machine running the build), which matters when cross-compiling.
+    tools = [":transform"],
+)
+
+genrule(
+    name = "explicit_variants",
+    srcs = ["input.txt"],
+    outs = ["variants.txt"],
+    # Three related expansions:
+    #   $(location  x)  - path, ambiguous if x has multiple outputs
+    #   $(execpath  x)  - path in the EXECUTION root (what actions should use)
+    #   $(rootpath  x)  - path in the RUNFILES tree (what programs should use)
+    cmd = """
+      echo "execpath: $(execpath input.txt)" >  $@
+      echo "rootpath: $(rootpath input.txt)" >> $@
+    """,
+)

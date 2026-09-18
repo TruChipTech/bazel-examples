@@ -1,0 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+
+# The classic pattern: take everything, then subtract the files that belong
+# somewhere else. `exclude` accepts the same wildcard syntax as the includes.
+py_library(
+    name = "lib",
+    srcs = glob(
+        ["lib/*.py"],
+        exclude = [
+            "lib/*_test.py",             # tests build as their own targets
+            "lib/experimental_*.py",     # not ready to compile
+        ],
+    ),
+    imports = ["lib"],
+)
+
+py_test(
+    name = "core_test",
+    srcs = ["lib/core_test.py"],
+    imports = ["lib"],
+    main = "lib/core_test.py",
+    deps = [":lib"],
+)

@@ -1,0 +1,31 @@
+load("@buildifier_prebuilt//:rules.bzl", "buildifier", "buildifier_test")
+
+# `bazel run //095_buildifier:format` rewrites BUILD and .bzl files
+# in place: sorted attributes, canonical formatting, sorted deps lists.
+buildifier(
+    name = "format",
+    exclude_patterns = ["./.git/*"],
+    lint_mode = "fix",
+    mode = "fix",
+)
+
+# A CHECK-only variant, suitable for CI.
+buildifier(
+    name = "format_check",
+    exclude_patterns = ["./.git/*"],
+    lint_mode = "warn",
+    mode = "check",
+)
+
+# A TEST that fails when any BUILD file is unformatted.
+buildifier_test(
+    name = "format_test",
+    size = "small",
+    srcs = [
+        "BUILD.bazel",
+        "sample.bzl",
+    ],
+    lint_mode = "warn",
+    mode = "check",
+    tags = ["manual"],  # opt-in: this repo formats on demand, not on every test
+)

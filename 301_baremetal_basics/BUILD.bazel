@@ -1,0 +1,11 @@
+load(":firmware.bzl", "firmware_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["firmware.bzl"])
+
+firmware_binary(
+    name = "boot",
+    srcs = ["boot.c"],
+    linker_script = "flash.ld",
+)

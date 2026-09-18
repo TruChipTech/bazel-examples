@@ -1,0 +1,60 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+# ONE base layer, shared by three images. Because layers are content-addressed,
+# all three manifests reference the SAME blob digest - the registry stores it
+# once and a host that already has it skips the download.
+pkg_tar(name = "base_layer", srcs = ["base.txt"], package_dir = "/base")
+
+[
+    pkg_tar(
+        name = "%s_layer" % svc,
+        srcs = ["%s.txt" % svc],
+        package_dir = "/app",
+    )
+    for svc in [
+        "alpha",
+        "beta",
+        "gamma",
+    ]
+]
+
+[
+    oci_image(
+        name = "%s_image" % svc,
+        entrypoint = "/app/%s.txt" % svc,
+        layers = [
+            ":base_layer",
+            ":%s_layer" % svc,
+        ],
+        ref = "demo:%s" % svc,
+    )
+    for svc in [
+        "alpha",
+        "beta",
+        "gamma",
+    ]
+]
+
+# Prove the base blob is identical across all three images.
+genrule(
+    name = "dedup_report",
+    srcs = [
+        ":alpha_image",
+        ":beta_image",
+        ":gamma_image",
+    ],
+    outs = ["dedup.txt"],
+    cmd = """
+      for d in $(locations :alpha_image) $(locations :beta_image) $(locations :gamma_image); do
+        echo "$$(basename $$d): $$(ls $$d/blobs/sha256 | sort | head -20 | tr '\\n' ' ')"
+      done > $@
+      echo "--- blobs appearing in more than one image are shared ---" >> $@
+      cat $(locations :alpha_image)/blobs/sha256/* > /dev/null 2>&1 || true
+      ls $(locations :alpha_image)/blobs/sha256 $(locations :beta_image)/blobs/sha256 \
+         $(locations :gamma_image)/blobs/sha256 2>/dev/null \
+        | grep -E '^[0-9a-f]{64}$$' | sort | uniq -c | sort -rn >> $@
+    """,
+)

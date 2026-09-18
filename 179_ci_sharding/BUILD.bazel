@@ -1,0 +1,33 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+# A set of tests carrying tags that a CI pipeline can slice on.
+py_test(name = "unit_a_test", size = "small", srcs = ["t.py"], main = "t.py", tags = ["unit"])
+
+py_test(name = "unit_b_test", size = "small", srcs = ["t.py"], main = "t.py", tags = ["unit"])
+
+py_test(
+    name = "integration_test",
+    size = "medium",
+    srcs = ["t.py"],
+    main = "t.py",
+    tags = ["integration"],
+)
+
+py_test(
+    name = "slow_test",
+    size = "medium",
+    srcs = ["t.py"],
+    main = "t.py",
+    tags = [
+        "integration",
+        "slow",
+    ],
+)
+
+test_suite(
+    name = "presubmit",
+    tests = [
+        ":unit_a_test",
+        ":unit_b_test",
+    ],
+)

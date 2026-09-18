@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+cc_library(
+    name = "lib_public",
+    srcs = ["lib_public.cc"],
+    hdrs = ["lib_public.h"],
+)
+
+cc_library(
+    name = "mid",
+    srcs = ["mid.cc"],
+    hdrs = ["mid.h"],
+    deps = [":lib_public"],
+)
+
+cc_binary(
+    name = "app",
+    srcs = ["app.cc"],
+    # Note: only :mid is declared. lib_public arrives transitively.
+    deps = [":mid"],
+)

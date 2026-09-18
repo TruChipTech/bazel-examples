@@ -1,0 +1,1 @@
+def storage(): return 'storage'

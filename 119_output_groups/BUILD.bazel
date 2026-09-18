@@ -1,0 +1,23 @@
+load(":build_artifacts.bzl", "build_artifacts")
+
+build_artifacts(name = "service")
+
+build_artifacts(name = "worker")
+
+# A filegroup can pull a specific output group out of a target, making it a
+# normal dependency for other rules.
+filegroup(
+    name = "all_docs",
+    srcs = [
+        ":service",
+        ":worker",
+    ],
+    output_group = "documentation",
+)
+
+genrule(
+    name = "doc_index",
+    srcs = [":all_docs"],
+    outs = ["index.md"],
+    cmd = "cat $(SRCS) > $@",
+)

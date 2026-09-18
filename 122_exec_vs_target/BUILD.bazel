@@ -1,0 +1,14 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load(":probe.bzl", "config_probe")
+
+py_binary(
+    name = "helper",
+    srcs = ["helper.py"],
+    main = "helper.py",
+    visibility = ["//visibility:public"],
+)
+
+config_probe(
+    name = "probe",
+    target_tool = ":helper",
+)

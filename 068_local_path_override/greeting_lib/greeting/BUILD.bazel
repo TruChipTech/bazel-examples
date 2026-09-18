@@ -1,0 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(
+    name = "polite",
+    srcs = ["polite.py"],
+    imports = ["."],
+    # Must be public for the consuming module to depend on it.
+    visibility = ["//visibility:public"],
+)

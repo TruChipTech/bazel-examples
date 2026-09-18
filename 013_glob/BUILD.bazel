@@ -1,0 +1,26 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+# glob() finds files matching a pattern at LOADING time. It only ever matches
+# files in this package - it never crosses into a subdirectory that has its own
+# BUILD file, and it never matches directories.
+py_library(
+    name = "all_modules",
+    srcs = glob(["src/*.py"]),
+    imports = ["src"],
+)
+
+# ** matches any number of directories, including zero.
+py_library(
+    name = "recursive",
+    srcs = glob(["src/**/*.py"]),
+    imports = ["src"],
+)
+
+# allow_empty = False turns "matched nothing" into an error. This is almost
+# always what you want: a typo in a glob otherwise silently produces an empty
+# target that builds fine and ships nothing.
+py_library(
+    name = "strict",
+    srcs = glob(["src/*.py"], allow_empty = False),
+    imports = ["src"],
+)

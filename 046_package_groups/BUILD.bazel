@@ -1,0 +1,14 @@
+# package_group names a set of packages so visibility lists stay readable and
+# are maintained in ONE place instead of on every target.
+package_group(
+    name = "internal_users",
+    packages = [
+        "//046_package_groups/allowed",
+        # "//some/tree/...",   # a whole subtree
+    ],
+)
+
+package_group(
+    name = "everything_below",
+    packages = ["//046_package_groups/..."],
+)

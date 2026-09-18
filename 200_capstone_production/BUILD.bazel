@@ -1,0 +1,80 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files", "strip_prefix")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//092_stamped_release:release.bzl", "release_manifest")
+
+package(default_visibility = ["//visibility:public"])
+
+# --- Configuration ----------------------------------------------------------
+# One flag retargets the whole build: --//200_capstone_production:environment=prod
+string_flag(
+    name = "environment",
+    build_setting_default = "dev",
+    values = [
+        "dev",
+        "prod",
+        "staging",
+    ],
+)
+
+# --- Provenance -------------------------------------------------------------
+release_manifest(
+    name = "manifest",
+    app_name = "telemetry-collector",
+)
+
+# --- Install layout ---------------------------------------------------------
+pkg_files(
+    name = "binaries",
+    srcs = ["//200_capstone_production/server:collector"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/opt/telemetry/bin",
+    strip_prefix = strip_prefix.files_only(),
+)
+
+pkg_files(
+    name = "metadata",
+    srcs = [":manifest"],
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "/opt/telemetry",
+    strip_prefix = strip_prefix.files_only(),
+)
+
+# --- Package ----------------------------------------------------------------
+pkg_tar(
+    name = "release",
+    srcs = [
+        ":binaries",
+        ":metadata",
+    ],
+    extension = "tar.gz",
+)
+
+# --- Verify the artifact ----------------------------------------------------
+sh_test(
+    name = "release_test",
+    size = "small",
+    srcs = ["verify_release.sh"],
+    data = [":release"],
+    tags = ["release"],
+)
+
+# --- CI entry points --------------------------------------------------------
+test_suite(
+    name = "presubmit",
+    tests = [
+        "//200_capstone_production/tests:config_actions_test",
+        "//200_capstone_production/tests:policy_test",
+    ],
+)
+
+test_suite(
+    name = "full",
+    tests = [
+        ":release_test",
+        "//200_capstone_production/tests:config_actions_test",
+        "//200_capstone_production/tests:e2e_test",
+        "//200_capstone_production/tests:policy_test",
+    ],
+)

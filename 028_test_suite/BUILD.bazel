@@ -1,0 +1,33 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(name = "a_test", srcs = ["a_test.py"], tags = ["fast"])
+
+py_test(name = "b_test", srcs = ["b_test.py"], tags = ["fast"])
+
+py_test(name = "c_test", srcs = ["c_test.py"], tags = ["slow"])
+
+# test_suite groups tests behind one label so CI scripts and humans can say
+# "run the smoke tests" without knowing the membership.
+test_suite(
+    name = "smoke",
+    tests = [
+        ":a_test",
+        ":b_test",
+    ],
+)
+
+# A suite can also be defined by tag rather than by an explicit list. This one
+# means "every test in this package tagged fast".
+test_suite(
+    name = "fast_tests",
+    tags = ["fast"],
+)
+
+# Suites compose.
+test_suite(
+    name = "everything",
+    tests = [
+        ":c_test",
+        ":smoke",
+    ],
+)

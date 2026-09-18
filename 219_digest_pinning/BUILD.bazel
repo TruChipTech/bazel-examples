@@ -1,0 +1,39 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(name = "check_pins", srcs = ["check_pins.py"], main = "check_pins.py")
+
+pkg_tar(name = "layer", srcs = ["app.txt"], package_dir = "/app")
+
+# An immutable, version-pinned reference.
+oci_image(name = "good_image", entrypoint = "/app/app.txt", layers = [":layer"], ref = "demo:v1.4.2")
+
+# A floating tag. Tagged manual: its policy test is MEANT to fail.
+oci_image(name = "bad_image", entrypoint = "/app/app.txt", layers = [":layer"], ref = "demo:latest")
+
+sh_test(
+    name = "pin_policy_test",
+    size = "small",
+    srcs = ["run_check.sh"],
+    args = ["219_digest_pinning/good_image_layout"],
+    data = [
+        ":check_pins",
+        ":good_image",
+    ],
+)
+
+sh_test(
+    name = "pin_policy_violation_test",
+    size = "small",
+    srcs = ["run_check.sh"],
+    args = ["219_digest_pinning/bad_image_layout"],
+    data = [
+        ":bad_image",
+        ":check_pins",
+    ],
+    tags = ["manual"],
+)

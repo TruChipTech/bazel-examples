@@ -1,0 +1,22 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+
+package(default_visibility = ["//visibility:public"])
+
+pkg_tar(name = "layer", srcs = ["app.sh"], mode = "0755", package_dir = "/app")
+
+oci_image(name = "image", entrypoint = "/app/app.sh", layers = [":layer"], ref = "demo:policy")
+
+py_binary(name = "check_policy", srcs = ["check_policy.py"], main = "check_policy.py")
+
+sh_test(
+    name = "policy_test",
+    size = "small",
+    srcs = ["run_policy.sh"],
+    data = [
+        ":check_policy",
+        ":image",
+    ],
+)

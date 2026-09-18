@@ -1,0 +1,6 @@
+# Documentation-only sample; the working extension lives in sample 137.
+genrule(
+    name = "note",
+    outs = ["note.txt"],
+    cmd = "echo 'see README.md and sample 137 for the working extension' > $@",
+)

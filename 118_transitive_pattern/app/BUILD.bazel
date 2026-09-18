@@ -1,0 +1,10 @@
+load("//118_transitive_pattern:minilang.bzl", "minilang_binary")
+
+minilang_binary(
+    name = "app",
+    srcs = ["main.ml"],
+    deps = [
+        "//118_transitive_pattern/core",
+        "//118_transitive_pattern/util",
+    ],
+)

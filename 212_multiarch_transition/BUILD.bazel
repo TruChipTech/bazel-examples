@@ -1,0 +1,30 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//201_oci_layout_basics:oci.bzl", "oci_image")
+load(":arch_probe.bzl", "arch_probe")
+load(":defs.bzl", "multiarch_images")
+
+package(default_visibility = ["//visibility:public"])
+
+# Content that genuinely differs per architecture.
+arch_probe(name = "arch_info")
+
+pkg_tar(name = "layer", srcs = [":arch_info"], package_dir = "/etc")
+
+# ONE image definition...
+oci_image(
+    name = "image",
+    entrypoint = "/etc/arch_info.txt",
+    layers = [":layer"],
+    ref = "demo:multiarch",
+)
+
+# ...built for THREE platforms by the split transition.
+multiarch_images(
+    name = "all_arches",
+    image = ":image",
+    platforms = {
+        "linux_amd64": "//129_cross_compilation:linux_x86_64",
+        "linux_arm64": "//129_cross_compilation:linux_aarch64",
+        "linux_armv7": "//129_cross_compilation:linux_armv7",
+    },
+)

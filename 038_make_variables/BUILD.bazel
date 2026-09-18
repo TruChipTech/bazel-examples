@@ -1,0 +1,27 @@
+genrule(
+    name = "show_vars",
+    outs = ["vars.txt"],
+
+    # "Make variables" are predefined values Bazel substitutes into cmd,
+    # copts, linkopts, args and a few other attributes.
+    cmd = """
+      {
+        echo "COMPILATION_MODE = $(COMPILATION_MODE)"
+        echo "TARGET_CPU       = $(TARGET_CPU)"
+        echo "BINDIR           = $(BINDIR)"
+        echo "GENDIR           = $(GENDIR)"
+        echo "-- a literal dollar needs doubling --"
+        MSG="set by the shell, not by Bazel"
+        echo "shell var: $$MSG"
+      } > $@
+    """,
+)
+
+# toolchains = [...] brings extra Make variables into scope. For example the
+# C++ toolchain exposes $(CC), $(AR), and friends.
+genrule(
+    name = "show_cc",
+    outs = ["cc.txt"],
+    cmd = "echo \"C compiler: $(CC)\" > $@",
+    toolchains = ["@bazel_tools//tools/cpp:current_cc_toolchain"],
+)

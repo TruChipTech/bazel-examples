@@ -1,0 +1,19 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# genquery computes the dependency closure AT BUILD TIME and writes it to a
+# file, making the graph itself testable (sample 094).
+genquery(
+    name = "api_deps",
+    expression = "deps(//177_dependency_policy/public_api:api)",
+    scope = ["//177_dependency_policy/public_api:api"],
+)
+
+# A test that asserts an architectural rule. It re-runs exactly when the
+# dependency graph changes, and is cached otherwise.
+sh_test(
+    name = "policy_test",
+    size = "small",
+    srcs = ["check_policy.sh"],
+    data = [":api_deps"],
+    tags = ["policy"],
+)

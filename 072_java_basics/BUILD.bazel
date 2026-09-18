@@ -1,0 +1,16 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+
+# Java rules come from rules_java in Bazel 9 - they are not built in.
+java_library(
+    name = "greeter",
+    srcs = ["src/main/java/com/example/Greeter.java"],
+    visibility = ["//visibility:public"],
+)
+
+java_binary(
+    name = "main",
+    srcs = ["src/main/java/com/example/Main.java"],
+    # main_class is required: Java has no convention Bazel could infer.
+    main_class = "com.example.Main",
+    deps = [":greeter"],
+)

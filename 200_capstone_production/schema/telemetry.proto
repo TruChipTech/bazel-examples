@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package capstone.telemetry;
+
+enum Level {
+  LEVEL_UNSPECIFIED = 0;
+  LEVEL_INFO = 1;
+  LEVEL_WARN = 2;
+  LEVEL_ERROR = 3;
+}
+
+message Sample {
+  string metric = 1;
+  double value = 2;
+  Level level = 3;
+}
+
+message Batch {
+  string source = 1;
+  repeated Sample samples = 2;
+}

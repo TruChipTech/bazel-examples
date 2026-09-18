@@ -1,0 +1,15 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+# A deliberately layered graph so the query examples in the README have
+# something interesting to walk: top -> middle -> base
+py_library(name = "base", srcs = ["base.py"], imports = ["."])
+
+py_library(name = "middle", srcs = ["middle.py"], imports = ["."], deps = [":base"])
+
+py_binary(
+    name = "top",
+    srcs = ["top.py"],
+    imports = ["."],
+    main = "top.py",
+    deps = [":middle"],
+)

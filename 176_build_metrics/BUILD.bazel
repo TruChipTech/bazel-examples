@@ -1,0 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# A helper that turns a BEP file into the handful of numbers worth graphing.
+py_binary(
+    name = "bep_metrics",
+    srcs = ["bep_metrics.py"],
+    main = "bep_metrics.py",
+    visibility = ["//visibility:public"],
+)

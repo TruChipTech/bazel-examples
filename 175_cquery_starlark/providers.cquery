@@ -1,0 +1,17 @@
+# A cquery Starlark script. Run with:
+#   bazel cquery //175_cquery_starlark:tool \
+#     --output=starlark --starlark:file=175_cquery_starlark/providers.cquery
+
+def format(target):
+    """Called once per configured target in the result set."""
+    lines = []
+    lines.append("label: %s" % target.label)
+
+    info = providers(target).get("DefaultInfo")
+    if info:
+        files = info.files.to_list()
+        lines.append("outputs: %d" % len(files))
+        for f in files:
+            lines.append("  %s" % f.path)
+
+    return "\n".join(lines)

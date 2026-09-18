@@ -1,0 +1,61 @@
+# BUILD files are Starlark, so ordinary language features are available at the
+# top level. Used carefully, they remove a lot of copy-paste.
+
+# A plain list, reused by several targets.
+COMMON_SRCS = ["shared.txt"]
+
+# A list comprehension generating one target per name. This is the single most
+# useful Starlark feature in BUILD files.
+SERVICES = [
+    "auth",
+    "billing",
+    "search",
+]
+
+[
+    genrule(
+        name = "%s_config" % service,
+        outs = ["%s.conf" % service],
+        cmd = "echo 'service = %s' > $@" % service,
+    )
+    for service in SERVICES
+]
+
+# Collect the generated targets into one group.
+filegroup(
+    name = "all_configs",
+    srcs = [":%s_config" % s for s in SERVICES],
+)
+
+# String methods work as expected.
+genrule(
+    name = "names",
+    outs = ["names.txt"],
+    cmd = "echo '%s' > $@" % ", ".join([s.upper() for s in SERVICES]),
+)
+
+# IMPORTANT: `if` STATEMENTS ARE NOT ALLOWED IN BUILD FILES.
+# Writing `if INCLUDE_EXPERIMENTAL:` here is a hard error. Bazel permits them
+# only inside functions in .bzl files. Two legal alternatives:
+
+INCLUDE_EXPERIMENTAL = False
+
+# 1. An `if` EXPRESSION (ternary) is fine - it is an expression, not a statement.
+EXPERIMENTAL_TAGS = ["experimental"] if INCLUDE_EXPERIMENTAL else ["stable"]
+
+# 2. A comprehension over a conditionally-empty list decides whether a target
+#    exists at all. This is the idiomatic way to make a target optional.
+[
+    genrule(
+        name = "experimental",
+        outs = ["experimental.txt"],
+        cmd = "echo experimental > $@",
+    )
+    for _ in ([1] if INCLUDE_EXPERIMENTAL else [])
+]
+
+genrule(
+    name = "tagged",
+    outs = ["tagged.txt"],
+    cmd = "echo '%s' > $@" % ",".join(EXPERIMENTAL_TAGS),
+)

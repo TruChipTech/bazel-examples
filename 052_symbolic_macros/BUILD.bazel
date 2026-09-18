@@ -1,0 +1,11 @@
+load(":macros.bzl", "service")
+
+service(
+    name = "api",
+    srcs = ["api.py"],
+    # Passed explicitly: a symbolic macro cannot reference a file in the
+    # calling package unless that label arrives through an attribute.
+    main = "api_main.py",
+    port = 9090,
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,8 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "reader",
+    srcs = ["reader.cc"],
+    data = ["message.txt"],
+    deps = ["@bazel_tools//tools/cpp/runfiles"],
+)

@@ -1,0 +1,19 @@
+load(":fleet.bzl", "signed_image_fleet")
+
+package(default_visibility = ["//visibility:public"])
+
+# FIVE services -> 5 layers + 5 images + 5 signatures + 5 verification tests,
+# all from one declaration, all independent, all built concurrently.
+signed_image_fleet(
+    name = "fleet_tests",
+    private_key = "@signing_keys//:rsa_private.pem",
+    public_key = "@signing_keys//:rsa_public.pem",
+    registry = "registry.example.com",
+    services = {
+        "auth": "auth.sh",
+        "billing": "billing.sh",
+        "search": "search.sh",
+        "gateway": "gateway.sh",
+        "notifier": "notifier.sh",
+    },
+)

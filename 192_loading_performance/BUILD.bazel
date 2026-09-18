@@ -1,0 +1,9 @@
+# A glob here would NOT descend into wide/a or wide/b, because those have their
+# own BUILD files and are therefore separate packages.
+filegroup(
+    name = "top_level_only",
+    srcs = glob(
+        ["*.md"],
+        allow_empty = True,
+    ),
+)

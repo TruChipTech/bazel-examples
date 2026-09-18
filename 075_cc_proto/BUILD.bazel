@@ -1,0 +1,17 @@
+load("@protobuf//bazel:cc_proto_library.bzl", "cc_proto_library")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# cc_proto_library generates C++ bindings for a proto_library.
+# Note: its `deps` takes PROTO_LIBRARY targets, not other cc targets.
+cc_proto_library(
+    name = "event_cc_proto",
+    deps = ["//074_proto_library:event_proto"],
+)
+
+cc_binary(
+    name = "use_event",
+    srcs = ["use_event.cc"],
+    # Depending on the cc_proto_library transitively brings in the generated
+    # code for common.proto too - you do not declare that separately.
+    deps = [":event_cc_proto"],
+)

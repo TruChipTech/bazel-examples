@@ -1,0 +1,11 @@
+# Because the files were exported, this package can reference them directly by
+# label, without the owning package defining a filegroup.
+genrule(
+    name = "legal_bundle",
+    srcs = [
+        "//017_exports_files/licenses:LICENSE.txt",
+        "//017_exports_files/licenses:NOTICE.txt",
+    ],
+    outs = ["legal.txt"],
+    cmd = "cat $(SRCS) > $@",
+)

@@ -1,0 +1,37 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+# target_compatible_with marks a target as INCOMPATIBLE with platforms that do
+# not satisfy the listed constraints. Incompatible targets are SKIPPED by
+# wildcard builds instead of failing them.
+
+py_test(
+    name = "portable_test",
+    size = "small",
+    srcs = ["portable_test.py"],
+)
+
+py_test(
+    name = "linux_only_test",
+    size = "small",
+    srcs = ["portable_test.py"],
+    main = "portable_test.py",
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+py_test(
+    name = "windows_only_test",
+    size = "small",
+    srcs = ["portable_test.py"],
+    main = "portable_test.py",
+    # On Linux this target is skipped by //... rather than failing.
+    target_compatible_with = ["@platforms//os:windows"],
+)
+
+# The idiom for "this target can never be built here": an unsatisfiable
+# constraint list. @platforms//:incompatible exists for exactly this.
+genrule(
+    name = "never_builds",
+    outs = ["never.txt"],
+    cmd = "echo unreachable > $@",
+    target_compatible_with = ["@platforms//:incompatible"],
+)

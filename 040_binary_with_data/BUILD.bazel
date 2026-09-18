@@ -1,0 +1,14 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# Group the runtime files once so several targets can share them.
+filegroup(
+    name = "config_files",
+    srcs = glob(["config/*"]),
+)
+
+py_binary(
+    name = "service",
+    srcs = ["service.py"],
+    data = [":config_files"],
+    main = "service.py",
+)

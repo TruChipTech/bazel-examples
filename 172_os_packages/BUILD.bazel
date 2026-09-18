@@ -1,0 +1,41 @@
+load("@rules_pkg//pkg:deb.bzl", "pkg_deb")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files", "strip_prefix")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+# Public so sample 173 can bundle the package into a release archive.
+package(default_visibility = ["//visibility:public"])
+
+pkg_files(
+    name = "binaries",
+    srcs = ["service.sh"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/usr/bin",
+    strip_prefix = strip_prefix.from_pkg(),
+)
+
+pkg_files(
+    name = "configs",
+    srcs = ["service.conf"],
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "/etc/demo-service",
+    strip_prefix = strip_prefix.from_pkg(),
+)
+
+# pkg_deb consumes a TAR of the install tree.
+pkg_tar(
+    name = "payload",
+    srcs = [
+        ":binaries",
+        ":configs",
+    ],
+)
+
+pkg_deb(
+    name = "demo_service_deb",
+    architecture = "amd64",
+    data = ":payload",
+    description = "A demonstration service packaged with rules_pkg.",
+    maintainer = "Platform Team <platform@example.com>",
+    package = "demo-service",
+    version = "1.4.2",
+)

@@ -1,0 +1,12 @@
+genrule(
+    name = "make_output",
+    outs = ["generated.txt"],
+    cmd = "echo 'this file lives under bazel-bin' > $@",
+)
+
+genrule(
+    name = "nested_output",
+    outs = ["sub/dir/deep.txt"],
+    # Bazel creates the parent directories for declared outputs.
+    cmd = "echo 'nested outputs are fine' > $@",
+)

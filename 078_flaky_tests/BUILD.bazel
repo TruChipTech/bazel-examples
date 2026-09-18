@@ -1,0 +1,17 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "stable_test",
+    size = "small",
+    srcs = ["stable_test.py"],
+)
+
+# flaky = True makes Bazel retry a FAILING test up to 3 times and report PASS
+# if any attempt succeeds. It is a quarantine mechanism, not a fix.
+py_test(
+    name = "quarantined_test",
+    size = "small",
+    srcs = ["stable_test.py"],
+    flaky = True,
+    main = "stable_test.py",
+)

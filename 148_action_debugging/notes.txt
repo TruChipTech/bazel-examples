@@ -1,0 +1,2 @@
+bazel actions are declared not executed
+actions are cached by their inputs

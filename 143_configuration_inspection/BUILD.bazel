@@ -1,0 +1,3 @@
+load("//142_outgoing_transitions:defs.bzl", "channel_probe")
+
+channel_probe(name = "probe")

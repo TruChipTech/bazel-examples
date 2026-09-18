@@ -1,0 +1,19 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+# The default visibility is //visibility:private, meaning "only targets in this
+# same package may depend on me". This target is explicitly locked down.
+py_library(
+    name = "secret",
+    srcs = ["secret.py"],
+    imports = ["."],
+    visibility = ["//visibility:private"],
+)
+
+# This one is visible only to the public_api package - a deliberate, narrow
+# grant rather than opening it to the whole repo.
+py_library(
+    name = "secret_for_api",
+    srcs = ["secret.py"],
+    imports = ["."],
+    visibility = ["//015_visibility/public_api:__pkg__"],
+)
